@@ -68,7 +68,9 @@ bot.on('message', async (ctx) => {
         else if(typeof ctx.message['video'] !== "undefined" && fix.admins.includes(ctx.from.id) && regX.newSerie.test(user.step)){
             const idCourse = user.step.slice(8)
             const course = allCourses.filter(item => item.idC == idCourse)[0]
-            await course.addSeries(allCourses, ctx.message.video.file_id, ctx.message.video.file_name)
+            await BD.updateOne({baza: 'dataBaze'}, {$inc: {idC: 1}}, {upsert: true})
+            const idC = (await BD.findOne({baza: 'dataBaze'}, {_id: 0, idC: 1})).idC
+            await course.addSeries(allCourses, ctx.message.video.file_id, ctx.message.video.file_name, idC)
             text = `<b>${fix.settingsText}</b>\n` + course.courseName
             keyboard = await keys.forEditCourse(course)
             await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
@@ -104,21 +106,16 @@ bot.on('callback_query', async (ctx) => {
         await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
     }
     else if(regX.courseSettings.test(value)){
-        console.log(value)
         const valueSplit = value.slice(14)
         const course = allCourses.filter(item => item.idC == valueSplit)[0]
-        console.log(course)
         text = `<b>${fix.settingsText}</b>\n` + `"${course.courseName}"\n` + `${fix.countSeries} ${course.series.length}`
         keyboard = await keys.forEditCourse(course)
         await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
     }
     else if(regX.dellCourse.test(value)){
-        console.log(value)
         const valueSplit = value.slice(10)
         const course = allCourses.filter(item => item.idC == valueSplit)[0]
-        console.log(allCourses.length)
         await course.dell(allCourses)
-        console.log(allCourses.length)
         await func.startMenu(ctx, arrayAllUsers, logo)
     }
     else if(regX.statusOnOff.test(value)){
@@ -131,7 +128,6 @@ bot.on('callback_query', async (ctx) => {
         await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
     }
     else if(regX.statusPay.test(value)){
-        console.log(value)
         const valueSplit = value.slice(9)
         const course = allCourses.filter(item => item.idC == valueSplit)[0]
         await course.pay(allCourses)
@@ -150,6 +146,25 @@ bot.on('callback_query', async (ctx) => {
         keyboard = Markup.inlineKeyboard([
             [Markup.button.callback(`${fix.canselText}`, 'meinMenu')]
         ])
+        await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+    }
+    else if(regX.look.test(value)){
+        const valueSplit = value.slice(4)
+        const name = allCourses.filter(item => item.idC == valueSplit)[0]
+        text = `"${name.courseName}"`
+        keyboard = await keys.forLookCourse(name)
+        await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+    }
+    else if(regX.showSer.test(value)){
+        const valueSplit = value.slice(7)
+        const a = allCourses.map(item => item.series)
+        console.log(a)
+        const b = a.flat().filter(item => item.idC == valueSplit)
+        console.log(b)
+
+        text = `hold`
+        keyboard = false
+        await bot.telegram.editMessageMedia(ctx.chat.id, user.lastMedia, 'hh', b[0], {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
         await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
     }
     

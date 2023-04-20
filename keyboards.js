@@ -15,7 +15,7 @@ const keys = {
         return Markup.inlineKeyboard(await mark.listCoursesForSimple(await mark.uploadCoursesFromMongo()))
     },
     forAdminUser: async function () {
-        return Markup.inlineKeyboard(await mark.listCoursesForAdmin(await mark.uploadCoursesFromMongo()))
+        return Markup.inlineKeyboard(await mark.listCoursesForAdmin(await mark.uploadCoursesFromMongoAdmin()))
     },
     forEditCourse: async function (course) {
         let flagOn
@@ -56,6 +56,17 @@ const keys = {
         }
 
         
+    },
+    forLookCourse: async function (course) {
+        if(course.series.length > 0){
+            const list = []
+            list.push([Markup.button.callback(`👍`, `likeCourse${course.idC}`)])
+            for(let i of course.series){
+                list.push([Markup.button.callback(`${i.caption}`, `showSer${i.idC}`)])
+            }
+            list.push([Markup.button.callback(`${fix.backText}`, `meinMenu`)])
+            return Markup.inlineKeyboard(list)
+        } 
     }
 }
 
@@ -136,7 +147,10 @@ const mark = {
         return list
     },
     uploadCoursesFromMongo: async function (){
-        return (await BD.findOne({baza: 'dataBaze'}, {_id: 0, courses: 1})).courses 
+        return ((await BD.findOne({baza: 'dataBaze'}, {_id: 0, courses: 1})).courses).filter(item => item.series.length > 0) 
+    },
+    uploadCoursesFromMongoAdmin: async function (){
+        return (await BD.findOne({baza: 'dataBaze'}, {_id: 0, courses: 1})).courses
     },
     classCourses: async function (coursesAr){
         let allCourses = []

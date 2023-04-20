@@ -104,10 +104,10 @@ class Course {
         courses.find(item => item.idC == this.idC).payStatus = this.payStatus
         await BD.updateOne({baza: 'dataBaze'}, {courses: courses})
     }
-    async addSeries(allCourses, file_id, file_name){
+    async addSeries(allCourses, file_id, file_name, idC){
         allCourses.find(item => item.idC == this.idC).series.push({'type': 'video', 'media': file_id, 'caption': file_name})
         const courses = (await BD.findOne({baza: 'dataBaze'}, {courses: 1 ,_id: 0})).courses
-        courses.find(item => item.idC == this.idC).series.push({'type': 'video', 'media': file_id, 'caption': file_name})
+        courses.find(item => item.idC == this.idC).series.push({'type': 'video', 'media': file_id, 'caption': file_name, idC: idC})
         await BD.updateOne({baza: 'dataBaze'}, {courses: courses})
     }
 }

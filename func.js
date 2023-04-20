@@ -68,7 +68,7 @@ func = {
             const user  = await func.userClass(arrayAllUsers, ctx.from.id)
             user.setOptionUser('step', 'zero')
             user.subOnOff(true)
-            user.payOnOff(false)
+            user.payOnOff(true)
     
             const mediaMassiv = []
             mediaMassiv.push(logo)

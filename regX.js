@@ -4,7 +4,9 @@ const regX = {
     statusOnOff: /^statusOnOff/,
     statusPay: /^statusPay/,
     addSeriesToCourse: /^addSeriesToCourse/,
-    newSerie: /^newSerie/
+    newSerie: /^newSerie/,
+    look: /^look/,
+    showSer: /^showSer/
 }
 
 exports.regX = regX
