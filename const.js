@@ -15,7 +15,20 @@ const fix = {
    settingsText: 'Настройки',
    addNameText: 'Название курса?',
    addSerieToBot: 'Че лыбишься? Отправь серию боту',
-   dellText: 'Удалить'
+   dellText: 'Удалить',
+   backText: 'Назад',
+   addSerie: 'Добавить серию',
+   payText: 'Платный',
+   notPayText: 'Бесплатный',
+   vkl: 'Вкл',
+   vikl: 'Выкл',
+   canselText: 'Отмена',
+   countSeries: 'Количество серий:',
+   forAllCoursesText: 'Для доступа ко всем курсам купите доступ',
+   buyText: 'Купить доступ',
+   buyLink: 'google.com',
+   linkSub: 'google.com',
+   allAcText: 'Вам доступны все курсы!'
 } 
 
 exports.fix = fix

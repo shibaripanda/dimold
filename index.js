@@ -1,5 +1,5 @@
 require('dotenv').config()
-const { Telegraf } = require('telegraf')
+const { Telegraf, Markup  } = require('telegraf')
 const bot = new Telegraf(process.env.BOT_TOKEN)
 const option = {allowedUpdates: ['chat_member', 'callback_query', 'message', 'channel_post']}
 const { func } = require('./func')
@@ -57,7 +57,6 @@ bot.on('message', async (ctx) => {
     try{
         const value = ctx.message.text
         const user  = await func.userClass(arrayAllUsers, ctx.from.id)
-        console.log(user)
         await bot.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id).catch(fix.errorDone)
 
         if(typeof ctx.message['photo'] !== "undefined" && fix.admins.includes(ctx.from.id)){
@@ -68,16 +67,14 @@ bot.on('message', async (ctx) => {
         // }
         else if(typeof ctx.message['video'] !== "undefined" && fix.admins.includes(ctx.from.id) && regX.newSerie.test(user.step)){
             const idCourse = user.step.slice(8)
-            console.log(idCourse)
-            console.log(user.step)
             const course = allCourses.filter(item => item.idC == idCourse)[0]
             await course.addSeries(allCourses, ctx.message.video.file_id, ctx.message.video.file_name)
             text = `<b>${fix.settingsText}</b>\n` + course.courseName
             keyboard = await keys.forEditCourse(course)
             await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+            user.setOptionUser('step', `zero`)
         }
         else if(user.step == 'newCourse'){
-            console.log('adcourse')
             await BD.updateOne({baza: 'dataBaze'}, {$inc: {idC: 1}}, {upsert: true})
             const idC = (await BD.findOne({baza: 'dataBaze'}, {_id: 0, idC: 1})).idC
             await BD.updateOne({baza: 'dataBaze'}, {$addToSet: {courses: {idC: idC, courseName: value, courseLike: [], series: [], payStatus: true, statusOn: false}}})
@@ -101,7 +98,9 @@ bot.on('callback_query', async (ctx) => {
         user.setOptionUser('step', 'newCourse')
         console.log(user.step)
         text = `<b>${fix.addNameText}</b>\n`
-        keyboard = false
+        keyboard =  Markup.inlineKeyboard([
+            [Markup.button.callback(`${fix.canselText}`, 'meinMenu')]
+        ])
         await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
     }
     else if(regX.courseSettings.test(value)){
@@ -109,7 +108,7 @@ bot.on('callback_query', async (ctx) => {
         const valueSplit = value.slice(14)
         const course = allCourses.filter(item => item.idC == valueSplit)[0]
         console.log(course)
-        text = `<b>${fix.settingsText}</b>\n` + course.courseName
+        text = `<b>${fix.settingsText}</b>\n` + `"${course.courseName}"\n` + `${fix.countSeries} ${course.series.length}`
         keyboard = await keys.forEditCourse(course)
         await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
     }
@@ -145,9 +144,12 @@ bot.on('callback_query', async (ctx) => {
     }
     else if(regX.addSeriesToCourse.test(value)){
         const valueSplit = value.slice(17)
+        const name = allCourses.filter(item => item.idC == valueSplit)[0].courseName
         user.setOptionUser('step', `newSerie${valueSplit}`)
-        text = `<b>${fix.addSerieToBot}</b>\n`
-        keyboard = false
+        text = `<b>${fix.addSerieToBot}</b>\n"${name}"`
+        keyboard = Markup.inlineKeyboard([
+            [Markup.button.callback(`${fix.canselText}`, 'meinMenu')]
+        ])
         await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
     }
     

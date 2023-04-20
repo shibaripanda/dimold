@@ -66,6 +66,9 @@ func = {
     startMenu: async function (ctx, arrayAllUsers, logo){
         try{
             const user  = await func.userClass(arrayAllUsers, ctx.from.id)
+            user.setOptionUser('step', 'zero')
+            user.subOnOff(true)
+            user.payOnOff(false)
     
             const mediaMassiv = []
             mediaMassiv.push(logo)
@@ -82,18 +85,18 @@ func = {
             }
             else if(await user.getPayStatus() == true){
                 console.log('Pay')
-                text = fix.toSubText
-                keyboard = keys.forPayUser
+                text = fix.allAcText
+                keyboard = await keys.forPayUser()
             }
             else if(await user.getSubStatus() == true){
                 console.log('Sub')
-                text = fix.toSubText
-                keyboard = keys.forSubUser
+                text = fix.forAllCoursesText
+                keyboard = await keys.forSubUser()
             }
             else{
                 console.log('Simple')
                 text = fix.toSubText
-                keyboard = keys.forSimpleUser
+                keyboard = await keys.forSimpleUser()
             }
 
             if(user.lastText == undefined){
