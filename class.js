@@ -32,6 +32,7 @@ class User {
                 await BD.updateOne({baza: 'dataBaze'}, {$pull: {'subChannelUsers': this.id}})
             }
             await BD.updateOne({id: this.id}, {'lastActiv': Date.now()})
+            return await func.classCourses(await func.uploadCoursesFromMongo())
     }
     async payOnOff(value){
         this.lastActiv = Date.now()
@@ -42,6 +43,7 @@ class User {
             await BD.updateOne({baza: 'dataBaze'}, {$pull: {'paidUsers': this.id}})
         }
         await BD.updateOne({id: this.id}, {'lastActiv': Date.now()})
+        return await func.classCourses(await func.uploadCoursesFromMongo())
     }
     async getPayStatus(){
         const ar = (await BD.findOne({baza: 'dataBaze'}, {paidUsers: 1, _id: 0})).paidUsers
@@ -109,6 +111,14 @@ class Course {
         const courses = (await BD.findOne({baza: 'dataBaze'}, {courses: 1 ,_id: 0})).courses
         courses.find(item => item.idC == this.idC).series.push({'type': 'video', 'media': file_id, 'caption': file_name, idC: idC})
         await BD.updateOne({baza: 'dataBaze'}, {courses: courses})
+    }
+    async like(allCourses, ctx){
+        allCourses.find(item => item.idC == this.idC).courseLike.push(ctx.from.id)
+        const courses = (await BD.findOne({baza: 'dataBaze'}, {courses: 1 ,_id: 0})).courses
+        courses.find(item => item.idC == this.idC).courseLike.push(ctx.from.id)
+        await BD.updateOne({baza: 'dataBaze'}, {courses: courses})
+        
+
     }
 }
 exports.User = User

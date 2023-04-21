@@ -6,7 +6,8 @@ const regX = {
     addSeriesToCourse: /^addSeriesToCourse/,
     newSerie: /^newSerie/,
     look: /^look/,
-    showSer: /^showSer/
+    showSer: /^showSer/,
+    likeCourse: /^likeCourse/
 }
 
 exports.regX = regX

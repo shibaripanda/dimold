@@ -67,8 +67,8 @@ func = {
         try{
             const user  = await func.userClass(arrayAllUsers, ctx.from.id)
             user.setOptionUser('step', 'zero')
-            user.subOnOff(true)
-            user.payOnOff(true)
+            // user.subOnOff(false)
+            // user.payOnOff(false)
     
             const mediaMassiv = []
             mediaMassiv.push(logo)
@@ -106,8 +106,8 @@ func = {
                 user.setOptionUser('lastMedia', mesMedia[0].message_id)
             }
             else{
-                await bot.telegram.editMessageMedia(ctx.chat.id, user.lastMedia, 'hh', mediaMassiv[0], {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
-                await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+                await bot.telegram.editMessageMedia(ctx.from.id, user.lastMedia, 'hh', mediaMassiv[0], {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+                await bot.telegram.editMessageText(ctx.from.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
             }
         }
         catch(e){

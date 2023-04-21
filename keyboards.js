@@ -60,7 +60,7 @@ const keys = {
     forLookCourse: async function (course) {
         if(course.series.length > 0){
             const list = []
-            list.push([Markup.button.callback(`👍`, `likeCourse${course.idC}`)])
+            // list.push([Markup.button.callback(`👍`, `likeCourse${course.idC}`)])
             for(let i of course.series){
                 list.push([Markup.button.callback(`${i.caption}`, `showSer${i.idC}`)])
             }
@@ -88,11 +88,11 @@ const mark = {
             flagPay = `💵`
         }
         else{
-            flagPay = `🆓`
+            flagPay = `✅`
         }
-            list.push([Markup.button.callback(`${flagOn}` + `${flagPay} ` + `(${i.series.length})` + ' ' + i.courseName, `courseSettings${i.idC}`)])
+            list.push([Markup.button.callback(`${fix.reitingText}(${i.courseLike.length}) ` + `${flagOn}` + `${flagPay} ` + `(${i.series.length})` + ' ' + i.courseName, `courseSettings${i.idC}`)])
         }
-        // list.push([Markup.button.callback(`${fix.courses}`, 'ggg')])
+        list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
         return list
     },
     listCoursesForSimple: async function (allCourses){
@@ -112,11 +112,11 @@ const mark = {
             flagPay = `💵`
         }
         else{
-            flagPay = `🆓`
+            flagPay = `✅`
         }
-            list.push([Markup.button.callback(`🔒 ` + i.courseName, `zero`)])
+            list.push([Markup.button.callback(`${fix.reitingText}(${i.courseLike.length}) ` + `🔒 ` + i.courseName, `zero`)])
         }
-        // list.push([Markup.button.callback(`${fix.courses}`, 'ggg')])
+        list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
         return list
     },
     listCoursesForSub: async function (allCourses){
@@ -130,20 +130,20 @@ const mark = {
             link = 'zero'
         }
         else{
-            flagPay = `🆓`
+            flagPay = `✅`
             link = 'look' + i.idC
         }
-            list.push([Markup.button.callback(`${flagPay} ` + i.courseName, link)])
+            list.push([Markup.button.callback(`${fix.reitingText}(${i.courseLike.length}) ` + `${flagPay} ` + i.courseName, link)])
         }
-        // list.push([Markup.button.callback(`${fix.courses}`, 'ggg')])
+        list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
         return list
     },
     listCoursesForPay: async function (allCourses){
         const list = []
         for(let i of allCourses.filter(item => item.statusOn == true)){
-            list.push([Markup.button.callback(`✅ ` + i.courseName, 'look' + i.idC)])
+            list.push([Markup.button.callback(`${fix.reitingText}(${i.courseLike.length}) ` + `✅ ` + i.courseName, 'look' + i.idC)])
         }
-        // list.push([Markup.button.callback(`${fix.courses}`, 'ggg')])
+        list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
         return list
     },
     uploadCoursesFromMongo: async function (){

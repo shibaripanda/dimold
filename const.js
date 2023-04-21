@@ -25,10 +25,16 @@ const fix = {
    canselText: 'Отмена',
    countSeries: 'Количество серий:',
    forAllCoursesText: 'Для доступа ко всем курсам купите доступ',
-   buyText: 'Купить доступ',
+   buyText: 'Купить доступ ко всем курсам!',
    buyLink: 'google.com',
-   linkSub: 'google.com',
-   allAcText: 'Вам доступны все курсы!'
+   linkSub: 'https://t.me/+mnmeiBtGRGdmYTJi',
+   allAcText: 'Вам доступны все курсы!',
+   listCourse: 'Список курсов',
+   listSwries: 'Все серии',
+   nextText: 'Следующая',
+   back1Text: 'Предыдущая',
+   reitingText: '📊',
+   refreshText: '♻️'
 } 
 
 exports.fix = fix

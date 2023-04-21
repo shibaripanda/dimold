@@ -53,6 +53,29 @@ bot.start(async (ctx) => {
     }
 })
 
+bot.on('chat_member', async (ctx) => {
+    console.log(ctx.from.id)
+    console.log(ctx.update.chat_member)
+    console.log(ctx.from.id)
+    const user  = await func.userClass(arrayAllUsers, ctx.from.id)
+    if (ctx.from.is_bot == false && ctx.update.chat_member.chat.id == process.env.TECH_CHAT){
+        if(ctx.update.chat_member.new_chat_member.status == 'member'){
+            console.log('add')
+            allCourses = await user.subOnOff(true)
+        }
+        else if(ctx.update.chat_member.new_chat_member.status == 'left'){
+            console.log('left')
+            allCourses = await user.subOnOff(false)
+        }
+    }
+    else{
+        ctx.telegram.banChatMember(ctx.chat.id, ctx.from.id, false, true)
+    }
+    if(await user.getPayStatus() == false){
+        await func.startMenu(ctx, arrayAllUsers, logo, allCourses)
+    }
+})
+
 bot.on('message', async (ctx) => {
     try{
         const value = ctx.message.text
@@ -151,21 +174,50 @@ bot.on('callback_query', async (ctx) => {
     else if(regX.look.test(value)){
         const valueSplit = value.slice(4)
         const name = allCourses.filter(item => item.idC == valueSplit)[0]
-        text = `"${name.courseName}"`
+        text = `${fix.reitingText}(${name.courseLike.length}) ` + `"${name.courseName}"`
         keyboard = await keys.forLookCourse(name)
         await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
     }
     else if(regX.showSer.test(value)){
         const valueSplit = value.slice(7)
-        const a = allCourses.map(item => item.series)
-        console.log(a)
-        const b = a.flat().filter(item => item.idC == valueSplit)
-        console.log(b)
+        const b = allCourses.map(item => item.series).flat().filter(item => item.idC == valueSplit)
+        const a = allCourses.find(item => item.series.find(item => item.idC == valueSplit))
+        let c = allCourses.map(item => item.series).flat().findIndex(item => item.idC == valueSplit)
+        const d = allCourses.filter(item => item.idC == a.idC)[0].series
 
-        text = `hold`
-        keyboard = false
+        text = `${fix.reitingText}(${a.courseLike.length}) ` + `"${a.courseName}"`
+        let but1 
+        let but2 
+
+        if(c - 1 > -1){
+           but1 = Markup.button.callback(`${fix.back1Text}`, `showSer${d[c - 1].idC}`) 
+        }
+        else{
+            but1 = Markup.button.callback(`${fix.back1Text}`, `showSer`, 'hide') 
+        }
+
+        if(c + 1 < d.length){
+           but2 = Markup.button.callback(`${fix.nextText}`, `showSer${d[c + 1].idC}`) 
+        }
+        else{
+            but2 = Markup.button.callback(`${fix.nextText}`, `showSer`, 'hide')  
+        }
+
+        keyboard = Markup.inlineKeyboard([
+            [Markup.button.callback(`👍`, `likeCourse${a.idC}`)],
+            [but1, Markup.button.callback(`${fix.listSwries}`, `look${a.idC}`), but2],
+            [Markup.button.callback(`${fix.listCourse}`, 'meinMenu')]
+        ])
         await bot.telegram.editMessageMedia(ctx.chat.id, user.lastMedia, 'hh', b[0], {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
         await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+    }
+    else if(regX.likeCourse.test(value)){
+        const valueSplit = value.slice(10)
+        const name = allCourses.filter(item => item.idC == valueSplit)[0]
+        await name.like(allCourses, ctx)
+        // text = `"${name.courseName}"`
+        // keyboard = await keys.forLookCourse(name)
+        // await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
     }
     
 })
