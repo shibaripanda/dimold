@@ -15,30 +15,35 @@ let allCourses
 let n = 0
 
 async function startWork(){
-    await func.dbConnect()
-    await func.dataBazaCreate()
-
-    allCourses = await func.classCourses(await func.uploadCoursesFromMongo())
-    adminUsers = [...new Set(fix.admins.concat(await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1}).admins).filter(item => item !== undefined))]
-    logo = (await BD.findOne({baza: 'dataBaze'}, {logo: 1, _id: 0})).logo
-    logo.caption = fix.helloText
-    arrayAllUsers = await func.updateArray(arrayAllUsers)
-    console.log('Start: ' + n + ' Users: '  + arrayAllUsers.length + ' Courses: ' + allCourses.length + ' Admins: ' + adminUsers.length)
-
-    setInterval(async () => {
-        n++
-
-        arrayAllUsers =  await func.updateArray(arrayAllUsers)
+    try{
+        await func.dbConnect()
+        await func.dataBazaCreate()
 
         allCourses = await func.classCourses(await func.uploadCoursesFromMongo())
-        
         adminUsers = [...new Set(fix.admins.concat(await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1}).admins).filter(item => item !== undefined))]
-        
         logo = (await BD.findOne({baza: 'dataBaze'}, {logo: 1, _id: 0})).logo
         logo.caption = fix.helloText
+        arrayAllUsers = await func.updateArray(arrayAllUsers)
+        console.log('Start: ' + n + ' Users: '  + arrayAllUsers.length + ' Courses: ' + allCourses.length + ' Admins: ' + adminUsers.length)
 
-        console.log('Pulse: ' + n + ' Users: ' + arrayAllUsers.length + ' Courses: ' + allCourses.length + ' Admins: ' + adminUsers.length)
-    }, 10000)
+        setInterval(async () => {
+            n++
+
+            arrayAllUsers =  await func.updateArray(arrayAllUsers)
+
+            allCourses = await func.classCourses(await func.uploadCoursesFromMongo())
+            
+            adminUsers = [...new Set(fix.admins.concat(await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1}).admins).filter(item => item !== undefined))]
+            
+            logo = (await BD.findOne({baza: 'dataBaze'}, {logo: 1, _id: 0})).logo
+            logo.caption = fix.helloText
+
+            console.log('Pulse: ' + n + ' Users: ' + arrayAllUsers.length + ' Courses: ' + allCourses.length + ' Admins: ' + adminUsers.length)
+        }, 10000)
+    }
+    catch(e){
+        console.log(e)
+    }
 }
 
 startWork()
@@ -54,25 +59,30 @@ bot.start(async (ctx) => {
 })
 
 bot.on('chat_member', async (ctx) => {
-    console.log(ctx.from.id)
-    console.log(ctx.update.chat_member)
-    console.log(ctx.from.id)
-    const user  = await func.userClass(arrayAllUsers, ctx.from.id)
-    if (ctx.from.is_bot == false && ctx.update.chat_member.chat.id == process.env.TECH_CHAT){
-        if(ctx.update.chat_member.new_chat_member.status == 'member'){
-            console.log('add')
-            allCourses = await user.subOnOff(true)
+    try{
+        console.log(ctx.from.id)
+        console.log(ctx.update.chat_member)
+        console.log(ctx.from.id)
+        const user  = await func.userClass(arrayAllUsers, ctx.from.id)
+        if (ctx.from.is_bot == false && ctx.update.chat_member.chat.id == process.env.TECH_CHAT){
+            if(ctx.update.chat_member.new_chat_member.status == 'member'){
+                console.log('add')
+                allCourses = await user.subOnOff(true)
+            }
+            else if(ctx.update.chat_member.new_chat_member.status == 'left'){
+                console.log('left')
+                allCourses = await user.subOnOff(false)
+            }
         }
-        else if(ctx.update.chat_member.new_chat_member.status == 'left'){
-            console.log('left')
-            allCourses = await user.subOnOff(false)
+        else{
+            ctx.telegram.banChatMember(ctx.chat.id, ctx.from.id, false, true)
+        }
+        if(await user.getPayStatus() == false){
+            await func.startMenu(ctx, arrayAllUsers, logo, allCourses)
         }
     }
-    else{
-        ctx.telegram.banChatMember(ctx.chat.id, ctx.from.id, false, true)
-    }
-    if(await user.getPayStatus() == false){
-        await func.startMenu(ctx, arrayAllUsers, logo, allCourses)
+    catch(e){
+        console.log(e)
     }
 })
 
@@ -114,112 +124,116 @@ bot.on('message', async (ctx) => {
 })
 
 bot.on('callback_query', async (ctx) => {
-    await ctx.answerCbQuery()
-    const value = ctx.update.callback_query.data
-    const user  = await func.userClass(arrayAllUsers, ctx.from.id)
-    let text
-    let keyboard = false
-    if(value == 'adCourse'){
-        user.setOptionUser('step', 'newCourse')
-        console.log(user.step)
-        text = `<b>${fix.addNameText}</b>\n`
-        keyboard =  Markup.inlineKeyboard([
-            [Markup.button.callback(`${fix.canselText}`, 'meinMenu')]
-        ])
-        await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
-    }
-    else if(regX.courseSettings.test(value)){
-        const valueSplit = value.slice(14)
-        const course = allCourses.filter(item => item.idC == valueSplit)[0]
-        text = `<b>${fix.settingsText}</b>\n` + `"${course.courseName}"\n` + `${fix.countSeries} ${course.series.length}`
-        keyboard = await keys.forEditCourse(course)
-        await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
-    }
-    else if(regX.dellCourse.test(value)){
-        const valueSplit = value.slice(10)
-        const course = allCourses.filter(item => item.idC == valueSplit)[0]
-        await course.dell(allCourses)
-        await func.startMenu(ctx, arrayAllUsers, logo)
-    }
-    else if(regX.statusOnOff.test(value)){
-        console.log(value)
-        const valueSplit = value.slice(11)
-        const course = allCourses.filter(item => item.idC == valueSplit)[0]
-        await course.onOff(allCourses)
-        text = `<b>${fix.settingsText}</b>\n` + course.courseName
-        keyboard = await keys.forEditCourse(course)
-        await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
-    }
-    else if(regX.statusPay.test(value)){
-        const valueSplit = value.slice(9)
-        const course = allCourses.filter(item => item.idC == valueSplit)[0]
-        await course.pay(allCourses)
-        text = `<b>${fix.settingsText}</b>\n` + course.courseName
-        keyboard = await keys.forEditCourse(course)
-        await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
-    }
-    else if(value == 'meinMenu'){
-        await func.startMenu(ctx, arrayAllUsers, logo, allCourses)
-    }
-    else if(regX.addSeriesToCourse.test(value)){
-        const valueSplit = value.slice(17)
-        const name = allCourses.filter(item => item.idC == valueSplit)[0].courseName
-        user.setOptionUser('step', `newSerie${valueSplit}`)
-        text = `<b>${fix.addSerieToBot}</b>\n"${name}"`
-        keyboard = Markup.inlineKeyboard([
-            [Markup.button.callback(`${fix.canselText}`, 'meinMenu')]
-        ])
-        await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
-    }
-    else if(regX.look.test(value)){
-        const valueSplit = value.slice(4)
-        const name = allCourses.filter(item => item.idC == valueSplit)[0]
-        text = `${fix.reitingText}(${name.courseLike.length}) ` + `"${name.courseName}"`
-        keyboard = await keys.forLookCourse(name)
-        await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
-    }
-    else if(regX.showSer.test(value)){
-        const valueSplit = value.slice(7)
-        const b = allCourses.map(item => item.series).flat().filter(item => item.idC == valueSplit)
-        const a = allCourses.find(item => item.series.find(item => item.idC == valueSplit))
-        let c = allCourses.map(item => item.series).flat().findIndex(item => item.idC == valueSplit)
-        const d = allCourses.filter(item => item.idC == a.idC)[0].series
-
-        text = `${fix.reitingText}(${a.courseLike.length}) ` + `"${a.courseName}"`
-        let but1 
-        let but2 
-
-        if(c - 1 > -1){
-           but1 = Markup.button.callback(`${fix.back1Text}`, `showSer${d[c - 1].idC}`) 
+    try{
+        await ctx.answerCbQuery()
+        const value = ctx.update.callback_query.data
+        const user  = await func.userClass(arrayAllUsers, ctx.from.id)
+        let text
+        let keyboard = false
+        if(value == 'adCourse'){
+            user.setOptionUser('step', 'newCourse')
+            console.log(user.step)
+            text = `<b>${fix.addNameText}</b>\n`
+            keyboard =  Markup.inlineKeyboard([
+                [Markup.button.callback(`${fix.canselText}`, 'meinMenu')]
+            ])
+            await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
         }
-        else{
-            but1 = Markup.button.callback(`${fix.back1Text}`, `showSer`, 'hide') 
+        else if(regX.courseSettings.test(value)){
+            const valueSplit = value.slice(14)
+            const course = allCourses.filter(item => item.idC == valueSplit)[0]
+            text = `<b>${fix.settingsText}</b>\n` + `"${course.courseName}"\n` + `${fix.countSeries} ${course.series.length}`
+            keyboard = await keys.forEditCourse(course)
+            await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
         }
+        else if(regX.dellCourse.test(value)){
+            const valueSplit = value.slice(10)
+            const course = allCourses.filter(item => item.idC == valueSplit)[0]
+            await course.dell(allCourses)
+            await func.startMenu(ctx, arrayAllUsers, logo)
+        }
+        else if(regX.statusOnOff.test(value)){
+            console.log(value)
+            const valueSplit = value.slice(11)
+            const course = allCourses.filter(item => item.idC == valueSplit)[0]
+            await course.onOff(allCourses)
+            text = `<b>${fix.settingsText}</b>\n` + course.courseName
+            keyboard = await keys.forEditCourse(course)
+            await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+        }
+        else if(regX.statusPay.test(value)){
+            const valueSplit = value.slice(9)
+            const course = allCourses.filter(item => item.idC == valueSplit)[0]
+            await course.pay(allCourses)
+            text = `<b>${fix.settingsText}</b>\n` + course.courseName
+            keyboard = await keys.forEditCourse(course)
+            await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+        }
+        else if(value == 'meinMenu'){
+            await func.startMenu(ctx, arrayAllUsers, logo, allCourses)
+        }
+        else if(regX.addSeriesToCourse.test(value)){
+            const valueSplit = value.slice(17)
+            const name = allCourses.filter(item => item.idC == valueSplit)[0].courseName
+            user.setOptionUser('step', `newSerie${valueSplit}`)
+            text = `<b>${fix.addSerieToBot}</b>\n"${name}"`
+            keyboard = Markup.inlineKeyboard([
+                [Markup.button.callback(`${fix.canselText}`, 'meinMenu')]
+            ])
+            await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+        }
+        else if(regX.look.test(value)){
+            const valueSplit = value.slice(4)
+            const name = allCourses.filter(item => item.idC == valueSplit)[0]
+            text = `${fix.reitingText}(${name.courseLike.length}) ` + `"${name.courseName}"`
+            keyboard = await keys.forLookCourse(name)
+            await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+        }
+        else if(regX.showSer.test(value)){
+            const valueSplit = value.slice(7)
+            const b = allCourses.map(item => item.series).flat().filter(item => item.idC == valueSplit)
+            const a = allCourses.find(item => item.series.find(item => item.idC == valueSplit))
+            let c = allCourses.map(item => item.series).flat().findIndex(item => item.idC == valueSplit)
+            const d = allCourses.filter(item => item.idC == a.idC)[0].series
 
-        if(c + 1 < d.length){
-           but2 = Markup.button.callback(`${fix.nextText}`, `showSer${d[c + 1].idC}`) 
-        }
-        else{
-            but2 = Markup.button.callback(`${fix.nextText}`, `showSer`, 'hide')  
-        }
+            text = `${fix.reitingText}(${a.courseLike.length}) ` + `"${a.courseName}"`
+            let but1 
+            let but2 
 
-        keyboard = Markup.inlineKeyboard([
-            [Markup.button.callback(`👍`, `likeCourse${a.idC}`)],
-            [but1, Markup.button.callback(`${fix.listSwries}`, `look${a.idC}`), but2],
-            [Markup.button.callback(`${fix.listCourse}`, 'meinMenu')]
-        ])
-        await bot.telegram.editMessageMedia(ctx.chat.id, user.lastMedia, 'hh', b[0], {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
-        await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+            if(c - 1 > -1){
+            but1 = Markup.button.callback(`${fix.back1Text}`, `showSer${d[c - 1].idC}`) 
+            }
+            else{
+                but1 = Markup.button.callback(`${fix.back1Text}`, `showSer`, 'hide') 
+            }
+
+            if(c + 1 < d.length){
+            but2 = Markup.button.callback(`${fix.nextText}`, `showSer${d[c + 1].idC}`) 
+            }
+            else{
+                but2 = Markup.button.callback(`${fix.nextText}`, `showSer`, 'hide')  
+            }
+
+            keyboard = Markup.inlineKeyboard([
+                [Markup.button.callback(`👍`, `likeCourse${a.idC}`)],
+                [but1, Markup.button.callback(`${fix.listSwries}`, `look${a.idC}`), but2],
+                [Markup.button.callback(`${fix.listCourse}`, 'meinMenu')]
+            ])
+            await bot.telegram.editMessageMedia(ctx.chat.id, user.lastMedia, 'hh', b[0], {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+            await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+        }
+        else if(regX.likeCourse.test(value)){
+            const valueSplit = value.slice(10)
+            const name = allCourses.filter(item => item.idC == valueSplit)[0]
+            await name.like(allCourses, ctx)
+            // text = `"${name.courseName}"`
+            // keyboard = await keys.forLookCourse(name)
+            // await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+        }
     }
-    else if(regX.likeCourse.test(value)){
-        const valueSplit = value.slice(10)
-        const name = allCourses.filter(item => item.idC == valueSplit)[0]
-        await name.like(allCourses, ctx)
-        // text = `"${name.courseName}"`
-        // keyboard = await keys.forLookCourse(name)
-        // await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
-    }
-    
+catch(e){
+    console.log(e)
+}
 })
 
 

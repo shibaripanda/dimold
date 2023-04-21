@@ -24,34 +24,69 @@ func = {
         } 
     },
     getInfoFromMongo: async function (id){
-        return await BD.findOne({id: id})  
+        try{
+          return await BD.findOne({id: id})   
+        }
+        catch(e){
+            console.log(e)
+        }   
     },
     getAllUsersFromMongo: async function (){
-        return await BD.find({id: {$exists: true}})  
+        try{
+            return await BD.find({id: {$exists: true}})
+        }
+        catch(e){
+            console.log(e)
+        }  
     },
     userClass: async function (array, userId){
-        return array.find(item => item.id == userId)  
+        try{
+          return array.find(item => item.id == userId)   
+        }
+        catch(e){
+            console.log(e)
+        }
     },
     updateArray: async function (arrayAllUsers){
-        arrayAllUsers = []
-        for(let i of await func.getAllUsersFromMongo()){
-            arrayAllUsers.push(new User(i))
+        try{
+            arrayAllUsers = []
+            for(let i of await func.getAllUsersFromMongo()){
+                arrayAllUsers.push(new User(i))
+            }
+            return arrayAllUsers 
         }
-        return arrayAllUsers
+        catch(e){
+            console.log(e)
+        }
     },
     addNewUserToArray: async function (ctx, arrayAllUsers, currentId){
-        if(!arrayAllUsers.map(item => item.id).includes(currentId)){
+        try{
+           if(!arrayAllUsers.map(item => item.id).includes(currentId)){
             await BD.updateOne({id: currentId}, {username: '@' + ctx.from.username, lastActiv: Date.now()}, {upsert: true})
             arrayAllUsers.push(new User(await func.getInfoFromMongo(currentId)))
+            }
+            return arrayAllUsers 
         }
-        return arrayAllUsers
+        catch(e){
+            console.log(e)
+        } 
     },
     saveLogo: async function (ctx){
-        await BD.updateOne({baza: 'dataBaze'}, {logo: {'type': 'photo', 'media': ctx.message.photo[0].file_id}})
+        try{
+          await BD.updateOne({baza: 'dataBaze'}, {logo: {'type': 'photo', 'media': ctx.message.photo[0].file_id}})  
+        }
+        catch(e){
+            console.log(e)
+        }
     },
     saveVideo: async function (ctx){
-        console.log(ctx.message)
-        await BD.updateOne({baza: 'dataBaze'}, {video: {'type': 'video', 'media': ctx.message.video.file_id, 'caption': ctx.message.video.file_name}})
+        try{
+          console.log(ctx.message)
+          await BD.updateOne({baza: 'dataBaze'}, {video: {'type': 'video', 'media': ctx.message.video.file_id, 'caption': ctx.message.video.file_name}})  
+        }
+        catch(e){
+            console.log(e)
+        }  
     },
     startStep: async function (ctx, arrayAllUsers){
         try{
@@ -115,14 +150,24 @@ func = {
         }
     },
     uploadCoursesFromMongo: async function (){
-        return (await BD.findOne({baza: 'dataBaze'}, {_id: 0, courses: 1})).courses 
+        try{
+          return (await BD.findOne({baza: 'dataBaze'}, {_id: 0, courses: 1})).courses   
+        }
+        catch(e){
+            console.log(e)
+        }
     },
     classCourses: async function (coursesAr){
-        allCourses = []
-        for(let i of coursesAr){
-            allCourses.push(new Course(i))
+        try{
+            allCourses = []
+            for(let i of coursesAr){
+                allCourses.push(new Course(i))
+            }
+            return allCourses
         }
-        return allCourses
+        catch(e){
+            console.log(e)
+        }
     }
 }
 
