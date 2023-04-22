@@ -12,6 +12,7 @@ class User {
         this.lastText = options.lastText
         this.lastMedia = options.lastMedia
         this.step = options.step
+        this.point = options.point
     }
     async setOptionUser(option, value){
         if(option !== 'id'){
@@ -75,6 +76,7 @@ class Course {
         this.series = options.series
         this.payStatus = options.payStatus
         this.statusOn = options.statusOn
+        this.start = options.start
     }
     async dell(allCourses){
         await BD.updateOne({baza: 'dataBaze'}, {$pull: {courses: allCourses.filter(item => item.idC == this.idC)[0]}})

@@ -62,6 +62,10 @@ step: {
 idC: {
     type: Number,
     required: true,
+},
+point: {
+    type: Number,
+    required: true,
 }
 }, {timestamps: true})
 

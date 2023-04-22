@@ -62,7 +62,7 @@ func = {
     addNewUserToArray: async function (ctx, arrayAllUsers, currentId){
         try{
            if(!arrayAllUsers.map(item => item.id).includes(currentId)){
-            await BD.updateOne({id: currentId}, {username: '@' + ctx.from.username, lastActiv: Date.now()}, {upsert: true})
+            await BD.updateOne({id: currentId}, {username: '@' + ctx.from.username, lastActiv: Date.now(), point: 0}, {upsert: true})
             arrayAllUsers.push(new User(await func.getInfoFromMongo(currentId)))
             }
             return arrayAllUsers 
@@ -102,10 +102,11 @@ func = {
         try{
             const user  = await func.userClass(arrayAllUsers, ctx.from.id)
             user.setOptionUser('step', 'zero')
+            user.setOptionUser('point', 1)
             // user.subOnOff(false)
             // user.payOnOff(false)
             // user.subOnOff(true)
-            user.payOnOff(true)
+            // user.payOnOff(true)
     
             const mediaMassiv = []
             mediaMassiv.push(logo)
@@ -169,6 +170,14 @@ func = {
         }
         catch(e){
             console.log(e)
+        }
+    },
+    upDateAllUsersMenu: async function (ctx, arrayAllUsers, logo, adminUsers){
+        for(let i of arrayAllUsers){
+            if(i.point == 1){
+               ctx.from.id = i.id
+               await func.startMenu(ctx, arrayAllUsers, logo)  
+            }
         }
     }
 }

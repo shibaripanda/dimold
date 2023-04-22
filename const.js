@@ -2,7 +2,7 @@ const BD = require("./models/post")
 
 const fix = {
    bdNmame: 'DimaCourse',
-   admins: [599773731],
+   admins: [599773731, 6169010819],
    techChat: process.env.TECH_CHAT,
    errorDone: function(error){if(error.response && error.response.statusCode === 400 || error.response && error.response.statusCode === 403){}},
    helloText: 'С Вами команда Focused✅.\nНаша миссия вывести твою жизнь на новый уровень! 🚀',
@@ -34,7 +34,9 @@ const fix = {
    nextText: 'Следующая',
    back1Text: 'Предыдущая',
    reitingText: '📊',
-   refreshText: '♻️'
+   refreshText: '♻️',
+   timeForNew: 604800000,
+   newTime: '🆕✴️'
 } 
 
 exports.fix = fix

@@ -103,7 +103,7 @@ const mark = {
         try{
            const list = []
             list.push([Markup.button.callback(`${fix.addCourse}`, 'adCourse')])
-            for(let i of allCourses){
+            for(let i of allCourses.sort(function(a, b){return b.start - a.start})){
                 let flagOn
             if(i.statusOn == true){
                 flagOn = `🟢`
@@ -132,22 +132,7 @@ const mark = {
         try{
            const list = []
             list.push([Markup.button.url(`${fix.toSubText}`, fix.linkSub)])
-            for(let i of allCourses.filter(item => item.statusOn == true)){
-                let flagOn
-            if(i.statusOn == true){
-                flagOn = `🟢`
-            }
-            else{
-                flagOn = `🔴`
-            }
-
-            let flagPay
-            if(i.payStatus == true){
-                flagPay = `💵`
-            }
-            else{
-                flagPay = `✅`
-            }
+            for(let i of allCourses.filter(item => item.statusOn == true).sort(function(a, b){return b.courseLike.length - a.courseLike.length})){
                 list.push([Markup.button.callback(`${fix.reitingText}(${i.courseLike.length}) ` + `🔒 ` + i.courseName, `zero`)])
             }
             list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
@@ -161,18 +146,22 @@ const mark = {
         try{
            const list = []
         list.push([Markup.button.url(`${fix.buyText}`, fix.buyLink)])
-        for(let i of allCourses.filter(item => item.statusOn == true)){
-        let flagPay
-        let link
-        if(i.payStatus == true){
-            flagPay = `🔒`
-            link = 'zero'
-        }
-        else{
-            flagPay = `✅`
-            link = 'look' + i.idC
-        }
-            list.push([Markup.button.callback(`${fix.reitingText}(${i.courseLike.length}) ` + `${flagPay} ` + i.courseName, link)])
+        for(let i of allCourses.filter(item => item.statusOn == true).sort(function(a, b){return b.courseLike.length - a.courseLike.length})){
+            let newTime = ''
+            if(Date.now() - i.start < fix.timeForNew){
+                newTime = fix.newTime
+            }
+            let flagPay
+            let link
+            if(i.payStatus == true){
+                flagPay = `🔒`
+                link = 'zero'
+            }
+            else{
+                flagPay = `✅`
+                link = 'look' + i.idC
+            }
+                list.push([Markup.button.callback(`${newTime}${fix.reitingText}(${i.courseLike.length}) ` + `${flagPay} ` + i.courseName, link)])
         }
         list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
         return list 
@@ -184,8 +173,12 @@ const mark = {
     listCoursesForPay: async function (allCourses){
         try{
           const list = []
-        for(let i of allCourses.filter(item => item.statusOn == true)){
-            list.push([Markup.button.callback(`${fix.reitingText}(${i.courseLike.length}) ` + `✅ ` + i.courseName, 'look' + i.idC)])
+        for(let i of allCourses.filter(item => item.statusOn == true).sort(function(a, b){return b.courseLike.length - a.courseLike.length})){
+            let newTime = ''
+            if(Date.now() - i.start < fix.timeForNew){
+                newTime = fix.newTime
+            }
+            list.push([Markup.button.callback(`${newTime}${fix.reitingText}(${i.courseLike.length}) ` + `✅ ` + i.courseName, 'look' + i.idC)])
         }
         list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
         return list  
