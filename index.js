@@ -191,35 +191,35 @@ bot.on('callback_query', async (ctx) => {
         }
         else if(regX.showSer.test(value)){
             const valueSplit = value.slice(7)
-            const b = allCourses.map(item => item.series).flat().filter(item => item.idC == valueSplit)
-            const a = allCourses.find(item => item.series.find(item => item.idC == valueSplit))
-            let c = allCourses.map(item => item.series).flat().findIndex(item => item.idC == valueSplit)
-            const d = allCourses.filter(item => item.idC == a.idC)[0].series
 
-            text = `${fix.reitingText}(${a.courseLike.length}) ` + `"${a.courseName}"`
+            const course = allCourses.find(item => item.series.find(item => item.idC == valueSplit))
+            const serie = course.series.find(item => item.idC == valueSplit)
+            const indexSerie = course.series.findIndex(item => item.idC == valueSplit)
+
+            const text = `${fix.reitingText}(${course.courseLike.length}) ` + `"${course.courseName}"`
             let but1 
-            let but2 
+            let but2
 
-            if(c - 1 > -1){
-            but1 = Markup.button.callback(`${fix.back1Text}`, `showSer${d[c - 1].idC}`) 
+            if(indexSerie - 1 > -1){
+                but1 = Markup.button.callback(`${fix.back1Text}`, `showSer${course.series[indexSerie - 1].idC}`) 
             }
             else{
                 but1 = Markup.button.callback(`${fix.back1Text}`, `showSer`, 'hide') 
             }
 
-            if(c + 1 < d.length){
-            but2 = Markup.button.callback(`${fix.nextText}`, `showSer${d[c + 1].idC}`) 
+            if(indexSerie + 1 < course.series.length){
+                but2 = Markup.button.callback(`${fix.nextText}`, `showSer${course.series[indexSerie + 1].idC}`) 
             }
             else{
                 but2 = Markup.button.callback(`${fix.nextText}`, `showSer`, 'hide')  
             }
 
             keyboard = Markup.inlineKeyboard([
-                [Markup.button.callback(`👍`, `likeCourse${a.idC}`)],
-                [but1, Markup.button.callback(`${fix.listSwries}`, `look${a.idC}`), but2],
+                [Markup.button.callback(`👍`, `likeCourse${course.idC}`)],
+                [but1, Markup.button.callback(`${fix.listSwries}`, `look${course.idC}`), but2],
                 [Markup.button.callback(`${fix.listCourse}`, 'meinMenu')]
             ])
-            await bot.telegram.editMessageMedia(ctx.chat.id, user.lastMedia, 'hh', b[0], {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+            await bot.telegram.editMessageMedia(ctx.chat.id, user.lastMedia, 'hh', serie, {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
             await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
         }
         else if(regX.likeCourse.test(value)){

@@ -5,7 +5,7 @@ const fix = {
    admins: [599773731],
    techChat: process.env.TECH_CHAT,
    errorDone: function(error){if(error.response && error.response.statusCode === 400 || error.response && error.response.statusCode === 403){}},
-   helloText: 'Привет, у нас для тебя много интересной информации!',
+   helloText: 'С Вами команда Focused✅.\nНаша миссия вывести твою жизнь на новый уровень! 🚀',
    mainMenuText: 'Главное меню',
    toSubText: 'Для доступа подпишись!',
    channelName: 'Канал',

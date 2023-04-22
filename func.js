@@ -104,6 +104,8 @@ func = {
             user.setOptionUser('step', 'zero')
             // user.subOnOff(false)
             // user.payOnOff(false)
+            // user.subOnOff(true)
+            user.payOnOff(true)
     
             const mediaMassiv = []
             mediaMassiv.push(logo)
