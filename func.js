@@ -182,7 +182,7 @@ func = {
         }
     },
     upDateAllUsersMenu: async function (ctx, arrayAllUsers, logo, adminUsers){
-        for(let i of arrayAllUsers){
+        for(let i of arrayAllUsers.filter(item => item.id !== ctx.from.id)){
             if(i.point == 1){
                ctx.from.id = i.id
                await func.startMenu(ctx, arrayAllUsers, logo)  
