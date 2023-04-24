@@ -109,7 +109,11 @@ func = {
             let keyboard
             let text
 
-            if(fix.admins.includes(ctx.from.id)){
+            let adminUsers = [...new Set(fix.admins.concat((await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1})).admins).filter(item => item !== undefined))]
+            console.log(adminUsers)
+            console.log(fix.admins)
+
+            if(adminUsers.includes(ctx.from.id)){
                 console.log('Admin')
                 text = `<b>⚙️ ${fix.toAdminText}</b>` + '\n' + `▪️ Всего курсов: ${allCourses.length}` + '\n' + `▪️ Платных курсов: ${allCourses.filter(item => item.payStatus == true).length}`+ '\n' + `▪️ Бесплатных курсов: ${allCourses.filter(item => item.payStatus == false).length}` + '\n' + `▪️ Включенных курсов: ${allCourses.filter(item => item.statusOn == true).length}`
                 keyboard = await keys.forAdminUser()

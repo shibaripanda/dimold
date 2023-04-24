@@ -20,7 +20,7 @@ async function startWork(){
         await func.dataBazaCreate()
 
         allCourses = await func.classCourses(await func.uploadCoursesFromMongo())
-        adminUsers = [...new Set(fix.admins.concat(await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1}).admins).filter(item => item !== undefined))]
+        adminUsers = [...new Set(fix.admins.concat((await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1})).admins).filter(item => item !== undefined))]
         logo = (await BD.findOne({baza: 'dataBaze'}, {logo: 1, _id: 0})).logo
         logo.caption = fix.helloText
         arrayAllUsers = await func.updateArray(arrayAllUsers)
@@ -33,7 +33,7 @@ async function startWork(){
 
             allCourses = await func.classCourses(await func.uploadCoursesFromMongo())
             
-            adminUsers = [...new Set(fix.admins.concat(await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1}).admins).filter(item => item !== undefined))]
+            adminUsers = [...new Set(fix.admins.concat((await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1})).admins).filter(item => item !== undefined))]
             
             logo = (await BD.findOne({baza: 'dataBaze'}, {logo: 1, _id: 0})).logo
             logo.caption = fix.helloText
@@ -98,6 +98,27 @@ bot.on('message', async (ctx) => {
         }
         else if(typeof ctx.message['photo'] !== "undefined" && user.step == 'upScreen'){
             await func.screen(ctx, arrayAllUsers, logo)
+        }
+        else if(regX.adminTest.test(ctx.message.text) && fix.admins.includes(ctx.from.id)){
+            const newAdmin = ctx.message.text.slice(7)
+            const idNewAdmin = await BD.findOne({username: newAdmin}, {_id: 0, id: 1})
+            console.log(idNewAdmin)
+            if(idNewAdmin !== null){
+                await BD.updateOne({baza: 'dataBaze'}, {$addToSet: {admins: idNewAdmin.id}})
+                adminUsers = [...new Set(fix.admins.concat(await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1}).admins).filter(item => item !== undefined))]
+                ctx.from.id = idNewAdmin.id
+                await func.startMenu(ctx, arrayAllUsers, logo) 
+            }
+        }
+        else if(regX.adminTest1.test(ctx.message.text) && fix.admins.includes(ctx.from.id)){
+            const newAdmin = ctx.message.text.slice(8)
+            const idNewAdmin = await BD.findOne({username: newAdmin}, {_id: 0, id: 1})
+            if(idNewAdmin !== null){
+                await BD.updateOne({baza: 'dataBaze'}, {$pull: {admins: idNewAdmin.id}})
+                adminUsers = [...new Set(fix.admins.concat(await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1}).admins).filter(item => item !== undefined))]
+                ctx.from.id = idNewAdmin.id
+                await func.startMenu(ctx, arrayAllUsers, logo)
+            }
         }
         else if(typeof ctx.message['video'] !== "undefined" && fix.admins.includes(ctx.from.id) && regX.newSerie.test(user.step)){
             const idCourse = user.step.slice(8)

@@ -12,7 +12,9 @@ const regX = {
     buyAllCourses: /^buyAllCourses/,
     upLoadScreen: /^upLoadScreen/,
     openAc: /^openAc/,
-    errorAc: /^errorAc/
+    errorAc: /^errorAc/,
+    adminTest: /^OnAdmin/,
+    adminTest1: /^OffAdmin/
 }
 
 exports.regX = regX
