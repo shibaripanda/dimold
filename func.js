@@ -110,7 +110,6 @@ func = {
             let text
 
             let adminUsers = [...new Set(fix.admins.concat((await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1})).admins).filter(item => item !== undefined))]
-            console.log(adminUsers)
 
             if(adminUsers.includes(ctx.from.id)){
                 console.log('Admin')
