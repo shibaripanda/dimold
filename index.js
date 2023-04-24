@@ -39,7 +39,7 @@ async function startWork(){
             logo.caption = fix.helloText
 
             console.log('Pulse: ' + n + ' Users: ' + arrayAllUsers.length + ' Courses: ' + allCourses.length + ' Admins: ' + adminUsers.length)
-        }, 10000)
+        }, 100000)
     }
     catch(e){
         console.log(e)
