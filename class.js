@@ -13,6 +13,8 @@ class User {
         this.lastMedia = options.lastMedia
         this.step = options.step
         this.point = options.point
+        this.statusPayAfterScreen = options.statusPayAfterScreen
+        this.techMes = options.techMes  
     }
     async setOptionUser(option, value){
         if(option !== 'id'){

@@ -103,11 +103,6 @@ func = {
             const user  = await func.userClass(arrayAllUsers, ctx.from.id)
             user.setOptionUser('step', 'zero')
             user.setOptionUser('point', 1)
-            // user.subOnOff(false)
-            // user.payOnOff(false)
-            // user.subOnOff(true)
-            // user.payOnOff(true)
-    
             const mediaMassiv = []
             mediaMassiv.push(logo)
     
@@ -129,11 +124,23 @@ func = {
             else if(await user.getSubStatus() == true){
                 console.log('Sub')
                 text = fix.forAllCoursesText
+                if(user.statusPayAfterScreen == false){
+                    text = fix.controlPay
+                }
+                else if(user.statusPayAfterScreen == true){
+                    text = fix.errorAc
+                }
                 keyboard = await keys.forSubUser()
             }
             else{
                 console.log('Simple')
                 text = fix.toSubText
+                if(user.statusPayAfterScreen == false){
+                    text = fix.controlPay
+                }
+                else if(user.statusPayAfterScreen == true){
+                    text = fix.errorAc
+                }
                 keyboard = await keys.forSimpleUser()
             }
 
@@ -179,6 +186,18 @@ func = {
                await func.startMenu(ctx, arrayAllUsers, logo)  
             }
         }
+    },
+    screen: async function (ctx, arrayAllUsers, logo){
+        const user  = await func.userClass(arrayAllUsers, ctx.from.id)
+        let text = `${fix.payMoment}`
+        let keyboard = Markup.inlineKeyboard([
+            [Markup.button.callback(`${fix.openAc}`, `openAc${ctx.from.id}`), Markup.button.callback(`${fix.errorAc}`, `errorAc${ctx.from.id}`)]
+        ])
+        await bot.telegram.sendMediaGroup(process.env.TECH_SCREEN, [{'type': 'photo', 'media': ctx.message.photo[0].file_id, caption: text}], {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+        const m = await bot.telegram.sendMessage(process.env.TECH_SCREEN, fix.chooseVariant + ' @' + ctx.from.username, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+        await user.setOptionUser('techMes', m.message_id)
+        await user.setOptionUser('statusPayAfterScreen', false)
+        await func.startMenu(ctx, arrayAllUsers, logo)
     }
 }
 

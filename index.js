@@ -96,9 +96,9 @@ bot.on('message', async (ctx) => {
         if(typeof ctx.message['photo'] !== "undefined" && fix.admins.includes(ctx.from.id)){
             await func.saveLogo(ctx)
         }
-        // else if(typeof ctx.message['video'] !== "undefined" && fix.admins.includes(ctx.from.id)){
-        //     await func.saveLogo(ctx)
-        // }
+        else if(typeof ctx.message['photo'] !== "undefined" && user.step == 'upScreen'){
+            await func.screen(ctx, arrayAllUsers, logo)
+        }
         else if(typeof ctx.message['video'] !== "undefined" && fix.admins.includes(ctx.from.id) && regX.newSerie.test(user.step)){
             const idCourse = user.step.slice(8)
             const course = allCourses.filter(item => item.idC == idCourse)[0]
@@ -128,8 +128,8 @@ bot.on('message', async (ctx) => {
 bot.on('callback_query', async (ctx) => {
     try{
         await ctx.answerCbQuery()
-        const value = ctx.update.callback_query.data
-        const user  = await func.userClass(arrayAllUsers, ctx.from.id)
+        let value = ctx.update.callback_query.data
+        let user  = await func.userClass(arrayAllUsers, ctx.from.id)
         let text
         let keyboard = false
         if(value == 'adCourse'){
@@ -237,6 +237,50 @@ bot.on('callback_query', async (ctx) => {
             // text = `"${name.courseName}"`
             // keyboard = await keys.forLookCourse(name)
             // await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+        }
+        else if(regX.buyAllCourses.test(value)){
+            user.setOptionUser('point', 4)
+            text = `${fix.forPayStepText}`
+
+            keyboard = Markup.inlineKeyboard([
+                [Markup.button.url(`${fix.payStep1} ${fix.linklPayName}`, fix.buyLink)],
+                [Markup.button.callback(`${fix.payStep2} ${fix.upLoadScreen}`, 'upLoadScreen')],
+                [Markup.button.callback(`${fix.backText}`, 'meinMenu')]
+            ])
+            await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+        }
+        else if(regX.upLoadScreen.test(value)){
+            text = `${fix.upLoadScreenText}`
+            user.setOptionUser('step', 'upScreen')
+            keyboard = Markup.inlineKeyboard([
+                [Markup.button.callback(`${fix.backText}`, 'meinMenu')]
+            ])
+            await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+        }
+        else if(regX.openAc.test(value)){
+            value = Number(value.slice(6))
+            user = await func.userClass(arrayAllUsers, value)
+            await user.payOnOff(true)
+            ctx.from.id = value
+            await func.startMenu(ctx, arrayAllUsers, logo)
+            text = fix.buyer + ' ' + user.username + '\n' + fix.ok + '\n' + fix.adminDone + ' ' + '@' + ctx.from.username
+            keyboard = Markup.inlineKeyboard([
+                [Markup.button.callback(`✔️${fix.openAc}`, `openAc${ctx.from.id}`), Markup.button.callback(`${fix.errorAc}`, `errorAc${ctx.from.id}`)]
+            ])
+            await bot.telegram.editMessageText(process.env.TECH_SCREEN, user.techMes, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+        }
+        else if(regX.errorAc.test(value)){
+            value = Number(value.slice(7))
+            user = await func.userClass(arrayAllUsers, value)
+            await user.payOnOff(false)
+            await user.setOptionUser('statusPayAfterScreen', true)
+            ctx.from.id = value
+            await func.startMenu(ctx, arrayAllUsers, logo)
+            text = fix.buyer + ' ' + user.username + '\n' + fix.no + '\n' + fix.adminDone + ' ' + '@' + ctx.from.username
+            keyboard = Markup.inlineKeyboard([
+                [Markup.button.callback(`${fix.openAc}`, `openAc${ctx.from.id}`), Markup.button.callback(`❌${fix.errorAc}`, `errorAc${ctx.from.id}`)]
+            ])
+            await bot.telegram.editMessageText(process.env.TECH_SCREEN, user.techMes, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
         }
     }
 catch(e){

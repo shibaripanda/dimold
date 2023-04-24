@@ -66,6 +66,14 @@ idC: {
 point: {
     type: Number,
     required: true,
+},
+statusPayAfterScreen: {
+    type: Boolean,
+    required: true,
+},
+techMes: {
+    type: Number,
+    required: true,
 }
 }, {timestamps: true})
 

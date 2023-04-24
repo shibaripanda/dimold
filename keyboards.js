@@ -99,6 +99,7 @@ const keys = {
 }
 
 const mark = {
+    
     listCoursesForAdmin: async function (allCourses){
         try{
            const list = []
@@ -145,7 +146,7 @@ const mark = {
     listCoursesForSub: async function (allCourses){
         try{
            const list = []
-        list.push([Markup.button.url(`${fix.buyText}`, fix.buyLink)])
+        list.push([Markup.button.callback(`${fix.buyText}`, 'buyAllCourses')])
         for(let i of allCourses.filter(item => item.statusOn == true).sort(function(a, b){return b.courseLike.length - a.courseLike.length})){
             let newTime = ''
             if(Date.now() - i.start < fix.timeForNew){
