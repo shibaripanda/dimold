@@ -129,14 +129,14 @@ bot.on('message', async (ctx) => {
             text = `<b>${fix.settingsText}</b>\n` + course.courseName
             keyboard = await keys.forEditCourse(course)
             await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
-            user.setOptionUser('step', `zero`)
+            await user.setOptionUser('step', `zero`)
         }
         else if(user.step == 'newCourse'){
             await BD.updateOne({baza: 'dataBaze'}, {$inc: {idC: 1}}, {upsert: true})
             const idC = (await BD.findOne({baza: 'dataBaze'}, {_id: 0, idC: 1})).idC
             await BD.updateOne({baza: 'dataBaze'}, {$addToSet: {courses: {idC: idC, courseName: value, courseLike: [], series: [], payStatus: true, statusOn: false, start: Date.now()}}})
             allCourses = await func.classCourses(await func.uploadCoursesFromMongo())
-            user.setOptionUser('step', 'zero')
+            await user.setOptionUser('step', 'zero')
             await func.startMenu(ctx, arrayAllUsers, logo)
         }
     }
@@ -154,7 +154,7 @@ bot.on('callback_query', async (ctx) => {
         let text
         let keyboard = false
         if(value == 'adCourse'){
-            user.setOptionUser('step', 'newCourse')
+            await user.setOptionUser('step', 'newCourse')
             console.log(user.step)
             text = `<b>${fix.addNameText}</b>\n`
             keyboard =  Markup.inlineKeyboard([
@@ -201,7 +201,7 @@ bot.on('callback_query', async (ctx) => {
         else if(regX.addSeriesToCourse.test(value)){
             const valueSplit = value.slice(17)
             const name = allCourses.filter(item => item.idC == valueSplit)[0].courseName
-            user.setOptionUser('step', `newSerie${valueSplit}`)
+            await user.setOptionUser('step', `newSerie${valueSplit}`)
             text = `<b>${fix.addSerieToBot}</b>\n"${name}"`
             keyboard = Markup.inlineKeyboard([
                 [Markup.button.callback(`${fix.canselText}`, 'meinMenu')]
@@ -209,7 +209,7 @@ bot.on('callback_query', async (ctx) => {
             await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
         }
         else if(regX.look.test(value)){
-            user.setOptionUser('point', 2)
+            await user.setOptionUser('point', 2)
             const valueSplit = value.slice(4)
             const name = allCourses.filter(item => item.idC == valueSplit)[0]
             text = `${fix.reitingText}(${name.courseLike.length}) ` + `"${name.courseName}"`
@@ -217,7 +217,7 @@ bot.on('callback_query', async (ctx) => {
             await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
         }
         else if(regX.showSer.test(value)){
-            user.setOptionUser('point', 3)
+            await user.setOptionUser('point', 3)
             const valueSplit = value.slice(7)
 
             const course = allCourses.find(item => item.series.find(item => item.idC == valueSplit))
@@ -260,7 +260,7 @@ bot.on('callback_query', async (ctx) => {
             // await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
         }
         else if(regX.buyAllCourses.test(value)){
-            user.setOptionUser('point', 4)
+            await user.setOptionUser('point', 4)
             text = `${fix.forPayStepText}`
 
             keyboard = Markup.inlineKeyboard([
@@ -272,7 +272,7 @@ bot.on('callback_query', async (ctx) => {
         }
         else if(regX.upLoadScreen.test(value)){
             text = `${fix.upLoadScreenText}`
-            user.setOptionUser('step', 'upScreen')
+            await user.setOptionUser('step', 'upScreen')
             keyboard = Markup.inlineKeyboard([
                 [Markup.button.callback(`${fix.backText}`, 'meinMenu')]
             ])

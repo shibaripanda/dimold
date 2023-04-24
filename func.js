@@ -101,8 +101,8 @@ func = {
     startMenu: async function (ctx, arrayAllUsers, logo){
         try{
             const user  = await func.userClass(arrayAllUsers, ctx.from.id)
-            user.setOptionUser('step', 'zero')
-            user.setOptionUser('point', 1)
+            await user.setOptionUser('step', 'zero')
+            await user.setOptionUser('point', 1)
             const mediaMassiv = []
             mediaMassiv.push(logo)
     
@@ -150,8 +150,8 @@ func = {
             if(user.lastText == undefined){
                 const mesMedia = await bot.telegram.sendMediaGroup(ctx.from.id, mediaMassiv, {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
                 const mesText = await bot.telegram.sendMessage(ctx.from.id, text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
-                user.setOptionUser('lastText', mesText.message_id)
-                user.setOptionUser('lastMedia', mesMedia[0].message_id)
+                await user.setOptionUser('lastText', mesText.message_id)
+                await user.setOptionUser('lastMedia', mesMedia[0].message_id)
             }
             else{
                 await bot.telegram.editMessageMedia(ctx.from.id, user.lastMedia, 'hh', mediaMassiv[0], {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
