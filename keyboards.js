@@ -99,7 +99,7 @@ const keys = {
 }
 
 const mark = {
-    
+
     listCoursesForAdmin: async function (allCourses){
         try{
            const list = []
@@ -122,7 +122,7 @@ const mark = {
             }
                 list.push([Markup.button.callback(`${fix.reitingText}(${i.courseLike.length}) ` + `${flagOn}` + `${flagPay} ` + `(${i.series.length})` + ' ' + i.courseName, `courseSettings${i.idC}`)])
             }
-            list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
+            // list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
             return list 
         }
         catch(e){
@@ -136,7 +136,7 @@ const mark = {
             for(let i of allCourses.filter(item => item.statusOn == true).sort(function(a, b){return b.courseLike.length - a.courseLike.length})){
                 list.push([Markup.button.callback(`${fix.reitingText}(${i.courseLike.length}) ` + `🔒 ` + i.courseName, `zero`)])
             }
-            list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
+            // list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
             return list 
         }
         catch(e){
@@ -164,7 +164,7 @@ const mark = {
             }
                 list.push([Markup.button.callback(`${newTime}${fix.reitingText}(${i.courseLike.length}) ` + `${flagPay} ` + i.courseName, link)])
         }
-        list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
+        // list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
         return list 
         }
         catch(e){
@@ -181,7 +181,7 @@ const mark = {
             }
             list.push([Markup.button.callback(`${newTime}${fix.reitingText}(${i.courseLike.length}) ` + `✅ ` + i.courseName, 'look' + i.idC)])
         }
-        list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
+        // list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
         return list  
         }
         catch(e){
