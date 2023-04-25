@@ -1,7 +1,7 @@
 const { Telegraf, Markup } = require('telegraf')
 const { fix } = require('./const')
 const BD = require('./models/post')
-const { User, Course } = require('./class.js')
+const { Course } = require('./class.js')
 
 const keys = {
 

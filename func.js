@@ -126,10 +126,10 @@ func = {
             else if(await user.getSubStatus() == true){
                 console.log('Sub')
                 text = fix.forAllCoursesText
-                if(user.statusPayAfterScreen == false){
+                if(await user.statusPayAfterScreen == false){
                     text = fix.controlPay
                 }
-                else if(user.statusPayAfterScreen == true){
+                else if(await user.statusPayAfterScreen == true){
                     text = fix.errorAc
                 }
                 keyboard = await keys.forSubUser()
@@ -137,24 +137,24 @@ func = {
             else{
                 console.log('Simple')
                 text = fix.toSubText
-                if(user.statusPayAfterScreen == false){
+                if(await user.statusPayAfterScreen == false){
                     text = fix.controlPay
                 }
-                else if(user.statusPayAfterScreen == true){
+                else if(await user.statusPayAfterScreen == true){
                     text = fix.errorAc
                 }
                 keyboard = await keys.forSimpleUser()
             }
 
-            if(user.lastText == undefined){
+            if(await user.lastText == undefined){
                 const mesMedia = await bot.telegram.sendMediaGroup(ctx.from.id, mediaMassiv, {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
                 const mesText = await bot.telegram.sendMessage(ctx.from.id, text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
                 await user.setOptionUser('lastText', mesText.message_id)
                 await user.setOptionUser('lastMedia', mesMedia[0].message_id)
             }
             else{
-                await bot.telegram.editMessageMedia(ctx.from.id, user.lastMedia, 'hh', mediaMassiv[0], {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
-                await bot.telegram.editMessageText(ctx.from.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+                await bot.telegram.editMessageMedia(ctx.from.id, await user.lastMedia, 'hh', mediaMassiv[0], {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+                await bot.telegram.editMessageText(ctx.from.id, await user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
             }
         }
         catch(e){
