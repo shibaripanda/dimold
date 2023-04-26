@@ -50,7 +50,7 @@ async function startWork(time){
     }
 }
 
-startWork(150000)
+startWork(3600000)
 
 bot.start(async (ctx) => {
     try{
