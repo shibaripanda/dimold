@@ -8,6 +8,11 @@ const { regX } = require('./regX')
 const { keys } = require('./keyboards.js')
 const BD = require('./models/post')
 
+let arrayAllUsersTemp
+let allCoursesTemp
+let adminUsersTemp
+let logoTemp
+
 let arrayAllUsers = []
 let logo
 let adminUsers
@@ -29,16 +34,16 @@ async function startWork(time){
         setInterval(async () => {
             n++
 
-            const arrayAllUsersTemp = await func.updateArray(arrayAllUsers)
+            arrayAllUsersTemp = await func.updateArray(arrayAllUsers)
             arrayAllUsers = arrayAllUsersTemp
 
-            const allCoursesTemp = await func.classCourses(await func.uploadCoursesFromMongo())
+            allCoursesTemp = await func.classCourses(await func.uploadCoursesFromMongo())
             allCourses = allCoursesTemp
             
-            const adminUsersTemp = [...new Set(fix.admins.concat((await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1})).admins).filter(item => item !== undefined))]
+            adminUsersTemp = [...new Set(fix.admins.concat((await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1})).admins).filter(item => item !== undefined))]
             adminUsers = adminUsersTemp
             
-            const logoTemp = (await BD.findOne({baza: 'dataBaze'}, {logo: 1, _id: 0})).logo
+            logoTemp = (await BD.findOne({baza: 'dataBaze'}, {logo: 1, _id: 0})).logo
             logo = logoTemp
             logo.caption = fix.helloText
 
