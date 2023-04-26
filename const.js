@@ -36,6 +36,7 @@ const fix = {
    reitingText: '📊',
    refreshText: '♻️',
    timeForNew: 604800000,
+   timeToUpdate: 112500,
    newTime: '🆕✴️',
    payStep1: 'Шаг 1:',
    linklPayName: 'QIWI 2000р',
