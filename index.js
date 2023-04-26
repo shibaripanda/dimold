@@ -29,13 +29,17 @@ async function startWork(time){
         setInterval(async () => {
             n++
 
-            arrayAllUsers =  await func.updateArray(arrayAllUsers)
+            const arrayAllUsersTemp = await func.updateArray(arrayAllUsers)
+            arrayAllUsers = arrayAllUsersTemp
 
-            allCourses = await func.classCourses(await func.uploadCoursesFromMongo())
+            const allCoursesTemp = await func.classCourses(await func.uploadCoursesFromMongo())
+            allCourses = allCoursesTemp
             
-            adminUsers = [...new Set(fix.admins.concat((await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1})).admins).filter(item => item !== undefined))]
+            const adminUsersTemp = [...new Set(fix.admins.concat((await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1})).admins).filter(item => item !== undefined))]
+            adminUsers = adminUsersTemp
             
-            logo = (await BD.findOne({baza: 'dataBaze'}, {logo: 1, _id: 0})).logo
+            const logoTemp = (await BD.findOne({baza: 'dataBaze'}, {logo: 1, _id: 0})).logo
+            logo = logoTemp
             logo.caption = fix.helloText
 
             console.log('Pulse: ' + n + ' Users: ' + arrayAllUsers.length + ' Courses: ' + allCourses.length + ' Admins: ' + adminUsers.length)
