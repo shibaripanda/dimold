@@ -188,7 +188,7 @@ func = {
                await func.startMenu(ctx, arrayAllUsers, logo)  
             }
         }
-        const mesText = await bot.telegram.sendMessage(ctx.from.id, '✅', {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+        const mesText = await bot.telegram.sendMessage(ctx.chat.id, '✅', {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
         console.log(mesText)
         console.log(mesText.message_id)
         await bot.telegram.deleteMessage(ctx.chat.id, mesText.message_id).catch(fix.errorDone)
