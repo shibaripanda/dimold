@@ -189,7 +189,7 @@ func = {
             }
         }
         const mesText = await bot.telegram.sendMessage(ctx.from.id, '✅', {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
-        await bot.telegram.deleteMessage(ctx.chat.id, mesText.message.message_id).catch(fix.errorDone)
+        await bot.telegram.deleteMessage(ctx.chat.id, mesText.message_id).catch(fix.errorDone)
     },
     screen: async function (ctx, arrayAllUsers, logo){
         const user  = await func.userClass(arrayAllUsers, ctx.from.id)
