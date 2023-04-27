@@ -56,21 +56,28 @@ const keys = {
             }
             if(course.series.length > 0){
                 const list = []
-                list.push([Markup.button.callback(`${fix.addSerie}`, `addSeriesToCourse${course.idC}`)])
-                for(let i of course.series){
-                    list.push([Markup.button.callback(`❌ ${fix.dellText}: ${i.caption}`, `delSerie${course.idC}`)])
+                if(flagOn == `${fix.vkl} /🔴 ${fix.vikl}`){
+                  list.push([Markup.button.callback(`${fix.addSerie}`, `addSeriesToCourse${course.idC}`)])  
                 }
-                list.push([Markup.button.callback(`${flagPay}`, `statusPay${course.idC}`)]),
-                list.push([Markup.button.callback(`${flagOn}`, `statusOnOff${course.idC}`)]),
-                list.push([Markup.button.callback(`${fix.dellText}`, `dellCourse${course.idC}`)]),
+                for(let i of course.series){
+                    if(flagOn == `${fix.vkl} /🔴 ${fix.vikl}`){
+                        list.push([Markup.button.callback(`❌ ${fix.dellText}: ${i.caption}`, `delSerie${i.idC}`)])
+                    }
+                    else{
+                        list.push([Markup.button.callback(`${i.caption}`, `zero`)])
+                    }
+                }
+                list.push([Markup.button.callback(`${flagPay}`, `statusPay${course.idC}`)])
+                list.push([Markup.button.callback(`${flagOn}`, `statusOnOff${course.idC}`)])
+                if(flagOn == `${fix.vkl} /🔴 ${fix.vikl}`){
+                   list.push([Markup.button.callback(`${fix.dellText}`, `dellCourse${course.idC}`)])
+                }
                 list.push([Markup.button.callback(`${fix.backText}`, `meinMenu`)])
                 return Markup.inlineKeyboard(list)
             }
-            else{
+            else{  
             return Markup.inlineKeyboard([
                 [Markup.button.callback(`${fix.addSerie}`, `addSeriesToCourse${course.idC}`)],
-                [Markup.button.callback(`${flagPay}`, `statusPay${course.idC}`)],
-                [Markup.button.callback(`${flagOn}`, `statusOnOff${course.idC}`)],
                 [Markup.button.callback(`${fix.dellText}`, `dellCourse${course.idC}`)],
                 [Markup.button.callback(`${fix.backText}`, `meinMenu`)]
             ]) 
@@ -136,7 +143,7 @@ const mark = {
             for(let i of allCourses.filter(item => item.statusOn == true).sort(function(a, b){return b.courseLike.length - a.courseLike.length})){
                 list.push([Markup.button.callback(`${fix.reitingText}(${i.courseLike.length}) ` + `🔒 ` + i.courseName, `zero`)])
             }
-            // list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
+            list.push([Markup.button.url(`${fix.maind}`, fix.linkSubGroup)])
             return list 
         }
         catch(e){
@@ -164,7 +171,7 @@ const mark = {
             }
                 list.push([Markup.button.callback(`${newTime}${fix.reitingText}(${i.courseLike.length}) ` + `${flagPay} ` + i.courseName, link)])
         }
-        // list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
+        list.push([Markup.button.url(`${fix.maind}`, fix.linkSubGroup)])
         return list 
         }
         catch(e){
@@ -181,6 +188,7 @@ const mark = {
             }
             list.push([Markup.button.callback(`${newTime}${fix.reitingText}(${i.courseLike.length}) ` + `✅ ` + i.courseName, 'look' + i.idC)])
         }
+        list.push([Markup.button.url(`${fix.maind}`, fix.linkSubGroup)])
         // list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
         return list  
         }

@@ -74,6 +74,10 @@ statusPayAfterScreen: {
 techMes: {
     type: Number,
     required: true,
+},
+subGroupUsers: {
+    type: Array,
+    required: true,
 }
 }, {timestamps: true})
 

@@ -71,14 +71,24 @@ bot.start(async (ctx) => {
 bot.on('chat_member', async (ctx) => {
     try{
         const user  = await func.userClass(arrayAllUsers, ctx.from.id)
-        if (ctx.from.is_bot == false && ctx.update.chat_member.chat.id == process.env.TECH_CHAT){
+        if (ctx.from.is_bot == false && ctx.update.chat_member.chat.id == process.env.TECH_CHAT || ctx.update.chat_member.chat.id == process.env.PUBLIC_GROUP){
             if(ctx.update.chat_member.new_chat_member.status == 'member'){
                 console.log('add')
-                allCourses = await user.subOnOff(true)
+                if(ctx.update.chat_member.chat.id == process.env.TECH_CHAT){
+                   allCourses = await user.subOnOff(true) 
+                }
+                else if(ctx.update.chat_member.chat.id == process.env.PUBLIC_GROUP){
+                    allCourses = await user.subGroupOnOff(true) 
+                }
             }
             else if(ctx.update.chat_member.new_chat_member.status == 'left'){
                 console.log('left')
-                allCourses = await user.subOnOff(false)
+                if(ctx.update.chat_member.chat.id == process.env.TECH_CHAT){
+                   allCourses = await user.subOnOff(false)
+                }
+                else if(ctx.update.chat_member.chat.id == process.env.PUBLIC_GROUP){
+                   allCourses = await user.subGroupOnOff(false)
+                }
             }
         }
         else{
@@ -308,6 +318,15 @@ bot.on('callback_query', async (ctx) => {
                 [Markup.button.callback(`${fix.openAc}`, `openAc${ctx.from.id}`), Markup.button.callback(`❌${fix.errorAc}`, `errorAc${ctx.from.id}`)]
             ])
             await bot.telegram.editMessageText(process.env.TECH_SCREEN, await user.techMes, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+        }
+        else if(regX.delSerie.test(value)){
+            await user.setOptionUser('point', 3)
+            const valueSplit = value.slice(8)
+            const course = allCourses.find(item => item.series.find(item => item.idC == valueSplit))
+            await course.delSerie(allCourses, valueSplit)
+            text = `<b>${fix.settingsText}</b>\n` + `"${course.courseName}"\n` + `${fix.countSeries} ${course.series.length}`
+            const keyboard = await keys.forEditCourse(course)
+            await bot.telegram.editMessageText(ctx.chat.id, await user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
         }
     }
 catch(e){

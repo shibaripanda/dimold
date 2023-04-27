@@ -14,7 +14,8 @@ const regX = {
     openAc: /^openAc/,
     errorAc: /^errorAc/,
     adminTest: /^OnAdmin/,
-    adminTest1: /^OffAdmin/
+    adminTest1: /^OffAdmin/,
+    delSerie: /^delSerie/
 }
 
 exports.regX = regX

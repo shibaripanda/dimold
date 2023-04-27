@@ -37,6 +37,17 @@ class User {
             await BD.updateOne({id: this.id}, {'lastActiv': Date.now()})
             return await func.classCourses(await func.uploadCoursesFromMongo())
     }
+    async subGroupOnOff(value){
+        this.lastActiv = Date.now()
+        if(value == true){
+           await BD.updateOne({baza: 'dataBaze'}, {$addToSet: {'subGroupUsers': this.id}}) 
+        }
+        else if(value == false){
+            await BD.updateOne({baza: 'dataBaze'}, {$pull: {'subGroupUsers': this.id}})
+        }
+        await BD.updateOne({id: this.id}, {'lastActiv': Date.now()})
+        return await func.classCourses(await func.uploadCoursesFromMongo())
+}
     async payOnOff(value){
         this.lastActiv = Date.now()
         if(value == true){
@@ -59,6 +70,15 @@ class User {
     }
     async getSubStatus(){
         const ar = (await BD.findOne({baza: 'dataBaze'}, {subChannelUsers: 1, _id: 0})).subChannelUsers
+        if(ar.includes(this.id)){
+            return true
+        }
+        else{
+            return false
+        }
+    }
+    async getSubGroupStatus(){
+        const ar = (await BD.findOne({baza: 'dataBaze'}, {subGroupUsers: 1, _id: 0})).subGroupUsers
         if(ar.includes(this.id)){
             return true
         }
@@ -123,6 +143,12 @@ class Course {
         await BD.updateOne({baza: 'dataBaze'}, {courses: courses})
         
 
+    }
+    async delSerie(allCourses, idC){
+        allCourses.find(item => item.series.find(item => item.idC == idC)).series.splice(allCourses.find(item => item.series.find(item => item.idC == idC)).series.findIndex(item => item.idC == idC), 1)
+        const courses = (await BD.findOne({baza: 'dataBaze'}, {courses: 1 ,_id: 0})).courses
+        courses.find(item => item.series.find(item => item.idC == idC)).series.splice(courses.find(item => item.series.find(item => item.idC == idC)).series.findIndex(item => item.idC == idC), 1)
+        await BD.updateOne({baza: 'dataBaze'}, {courses: courses})
     }
 }
 exports.User = User
