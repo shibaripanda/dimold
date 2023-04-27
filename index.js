@@ -190,7 +190,7 @@ bot.on('callback_query', async (ctx) => {
             const course = allCourses.filter(item => item.idC == valueSplit)[0]
             await course.dell(allCourses)
             await func.startMenu(ctx, arrayAllUsers, logo)
-            await func.upDateAllUsersMenu(ctx, arrayAllUsers, logo, adminUsers)
+            // await func.upDateAllUsersMenu(ctx, arrayAllUsers, logo, adminUsers)
         }
         else if(regX.statusOnOff.test(value)){
             console.log(value)
