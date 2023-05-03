@@ -1,0 +1,10 @@
+MONGO_COLLECTION = Test
+BOT_TOKEN = 5083463723:AAGMe3J3OZWBkrOW93FHuH2WMswvjFZ3D1E 
+BD_TOKEN = mongodb+srv://panda:8JeqSt5YkCc8Yet@cluster0.dmr6t.mongodb.net/DimaCourse?retryWrites=true&w=majority
+TECH_CHAT = -1001606849838
+TECH_SCREEN = -1001639457688
+PUBLIC_GROUP = -1001639457688
+
+buyLink = https://my.qiwi.com/Dmytryi-Dvtuf59S8-
+linkSub = https://t.me/+mnmeiBtGRGdmYTJi
+linkSubGroup = https://t.me/+YOXm8NQnpxszYTdi

@@ -59,8 +59,10 @@ startWork(fix.timeToUpdate)
 
 bot.start(async (ctx) => {
     try{
-        arrayAllUsers = await func.startStep(ctx, arrayAllUsers)
-        await func.startMenu(ctx, arrayAllUsers, logo)
+        if(ctx.chat.id > 0){
+           arrayAllUsers = await func.startStep(ctx, arrayAllUsers)
+           await func.startMenu(ctx, arrayAllUsers, logo) 
+        }
     }
     catch(e){
         await func.startMenu(ctx, arrayAllUsers, logo)
@@ -70,7 +72,7 @@ bot.start(async (ctx) => {
 
 bot.on('chat_member', async (ctx) => {
     try{
-        console.log(ctx.update.chat_member.chat.id)
+        // console.log(ctx.update.chat_member.chat.id)
         const user  = await func.userClass(arrayAllUsers, ctx.from.id)
         if (ctx.from.is_bot == false && ctx.update.chat_member.chat.id == process.env.TECH_CHAT || ctx.update.chat_member.chat.id == process.env.PUBLIC_GROUP){
             if(ctx.update.chat_member.new_chat_member.status == 'member'){
@@ -106,56 +108,59 @@ bot.on('chat_member', async (ctx) => {
 
 bot.on('message', async (ctx) => {
     try{
-        const value = ctx.message.text
-        const user  = await func.userClass(arrayAllUsers, ctx.from.id)
-        await bot.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id).catch(fix.errorDone)
+        if(ctx.chat.id > 0){
+            // console.log(ctx.update.chat_member.chat.id)
+            const value = ctx.message.text
+            const user  = await func.userClass(arrayAllUsers, ctx.from.id)
+            await bot.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id).catch(fix.errorDone)
 
-        if(typeof ctx.message['photo'] !== "undefined" && fix.admins.includes(ctx.from.id)){
-            await func.saveLogo(ctx)
-        }
-        else if(typeof ctx.message['photo'] !== "undefined" && user.step == 'upScreen'){
-            await func.screen(ctx, arrayAllUsers, logo)
-        }
-        else if(regX.adminTest.test(ctx.message.text) && fix.admins.includes(ctx.from.id)){
-            const newAdmin = ctx.message.text.slice(7)
-            const idNewAdmin = await BD.findOne({username: newAdmin}, {_id: 0, id: 1})
-            console.log(idNewAdmin)
-            if(idNewAdmin !== null){
-                await BD.updateOne({baza: 'dataBaze'}, {$addToSet: {admins: idNewAdmin.id}})
-                adminUsers = [...new Set(fix.admins.concat(await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1}).admins).filter(item => item !== undefined))]
-                ctx.from.id = idNewAdmin.id
-                await func.startMenu(ctx, arrayAllUsers, logo) 
+            if(typeof ctx.message['photo'] !== "undefined" && fix.admins.includes(ctx.from.id)){
+                await func.saveLogo(ctx)
             }
-        }
-        else if(regX.adminTest1.test(ctx.message.text) && fix.admins.includes(ctx.from.id)){
-            const newAdmin = ctx.message.text.slice(8)
-            const idNewAdmin = await BD.findOne({username: newAdmin}, {_id: 0, id: 1})
-            if(idNewAdmin !== null){
-                await BD.updateOne({baza: 'dataBaze'}, {$pull: {admins: idNewAdmin.id}})
-                adminUsers = [...new Set(fix.admins.concat(await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1}).admins).filter(item => item !== undefined))]
-                ctx.from.id = idNewAdmin.id
+            else if(typeof ctx.message['photo'] !== "undefined" && user.step == 'upScreen'){
+                await func.screen(ctx, arrayAllUsers, logo)
+            }
+            else if(regX.adminTest.test(ctx.message.text) && fix.admins.includes(ctx.from.id)){
+                const newAdmin = ctx.message.text.slice(7)
+                const idNewAdmin = await BD.findOne({username: newAdmin}, {_id: 0, id: 1})
+                console.log(idNewAdmin)
+                if(idNewAdmin !== null){
+                    await BD.updateOne({baza: 'dataBaze'}, {$addToSet: {admins: idNewAdmin.id}})
+                    adminUsers = [...new Set(fix.admins.concat(await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1}).admins).filter(item => item !== undefined))]
+                    ctx.from.id = idNewAdmin.id
+                    await func.startMenu(ctx, arrayAllUsers, logo) 
+                }
+            }
+            else if(regX.adminTest1.test(ctx.message.text) && fix.admins.includes(ctx.from.id)){
+                const newAdmin = ctx.message.text.slice(8)
+                const idNewAdmin = await BD.findOne({username: newAdmin}, {_id: 0, id: 1})
+                if(idNewAdmin !== null){
+                    await BD.updateOne({baza: 'dataBaze'}, {$pull: {admins: idNewAdmin.id}})
+                    adminUsers = [...new Set(fix.admins.concat(await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1}).admins).filter(item => item !== undefined))]
+                    ctx.from.id = idNewAdmin.id
+                    await func.startMenu(ctx, arrayAllUsers, logo)
+                }
+            }
+            else if(typeof ctx.message['video'] !== "undefined" && fix.admins.includes(ctx.from.id) && regX.newSerie.test(user.step)){
+                const idCourse = user.step.slice(8)
+                const course = allCourses.filter(item => item.idC == idCourse)[0]
+                await BD.updateOne({baza: 'dataBaze'}, {$inc: {idC: 1}}, {upsert: true})
+                const idC = (await BD.findOne({baza: 'dataBaze'}, {_id: 0, idC: 1})).idC
+                await course.addSeries(allCourses, ctx.message.video.file_id, ctx.message.video.file_name, idC)
+                text = `<b>${fix.settingsText}</b>\n` + course.courseName
+                keyboard = await keys.forEditCourse(course)
+                await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+                await user.setOptionUser('step', `zero`)
+            }
+            else if(user.step == 'newCourse'){
+                await BD.updateOne({baza: 'dataBaze'}, {$inc: {idC: 1}}, {upsert: true})
+                const idC = (await BD.findOne({baza: 'dataBaze'}, {_id: 0, idC: 1})).idC
+                await BD.updateOne({baza: 'dataBaze'}, {$addToSet: {courses: {idC: idC, courseName: value, courseLike: [], series: [], payStatus: true, statusOn: false, start: Date.now()}}})
+                allCourses = await func.classCourses(await func.uploadCoursesFromMongo())
+                await user.setOptionUser('step', 'zero')
                 await func.startMenu(ctx, arrayAllUsers, logo)
             }
-        }
-        else if(typeof ctx.message['video'] !== "undefined" && fix.admins.includes(ctx.from.id) && regX.newSerie.test(user.step)){
-            const idCourse = user.step.slice(8)
-            const course = allCourses.filter(item => item.idC == idCourse)[0]
-            await BD.updateOne({baza: 'dataBaze'}, {$inc: {idC: 1}}, {upsert: true})
-            const idC = (await BD.findOne({baza: 'dataBaze'}, {_id: 0, idC: 1})).idC
-            await course.addSeries(allCourses, ctx.message.video.file_id, ctx.message.video.file_name, idC)
-            text = `<b>${fix.settingsText}</b>\n` + course.courseName
-            keyboard = await keys.forEditCourse(course)
-            await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
-            await user.setOptionUser('step', `zero`)
-        }
-        else if(user.step == 'newCourse'){
-            await BD.updateOne({baza: 'dataBaze'}, {$inc: {idC: 1}}, {upsert: true})
-            const idC = (await BD.findOne({baza: 'dataBaze'}, {_id: 0, idC: 1})).idC
-            await BD.updateOne({baza: 'dataBaze'}, {$addToSet: {courses: {idC: idC, courseName: value, courseLike: [], series: [], payStatus: true, statusOn: false, start: Date.now()}}})
-            allCourses = await func.classCourses(await func.uploadCoursesFromMongo())
-            await user.setOptionUser('step', 'zero')
-            await func.startMenu(ctx, arrayAllUsers, logo)
-        }
+        } 
     }
     catch(e){
         await func.startMenu(ctx, arrayAllUsers, logo)
