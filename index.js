@@ -27,7 +27,7 @@ async function startWork(time){
         allCourses = await func.classCourses(await func.uploadCoursesFromMongo())
         adminUsers = [...new Set(fix.admins.concat((await BD.findOne({baza: 'dataBaze'}, {_id: 0, admins: 1})).admins).filter(item => item !== undefined))]
         logo = (await BD.findOne({baza: 'dataBaze'}, {logo: 1, _id: 0})).logo
-        logo.caption = fix.helloText
+        // logo.caption = fix.helloText
         arrayAllUsers = await func.updateArray(arrayAllUsers)
         console.log('Start: ' + n + ' Users: '  + arrayAllUsers.length + ' Courses: ' + allCourses.length + ' Admins: ' + adminUsers.length)
 
@@ -45,7 +45,7 @@ async function startWork(time){
             
             logoTemp = (await BD.findOne({baza: 'dataBaze'}, {logo: 1, _id: 0})).logo
             logo = logoTemp
-            logo.caption = fix.helloText
+            // logo.caption = fix.helloText
 
             console.log('Pulse: ' + n + ' Users: ' + arrayAllUsers.length + ' Courses: ' + allCourses.length + ' Admins: ' + adminUsers.length)
         }, time)
