@@ -136,7 +136,7 @@ func = {
             }
             else{
                 console.log('Simple')
-                text = fix.toSubText
+                text = fix.toSubText1
                 if(await user.statusPayAfterScreen == false){
                     text = fix.controlPay
                 }

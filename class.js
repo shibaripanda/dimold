@@ -47,7 +47,7 @@ class User {
         }
         await BD.updateOne({id: this.id}, {'lastActiv': Date.now()})
         return await func.classCourses(await func.uploadCoursesFromMongo())
-}
+    }
     async payOnOff(value){
         this.lastActiv = Date.now()
         if(value == true){
@@ -141,8 +141,6 @@ class Course {
         const courses = (await BD.findOne({baza: 'dataBaze'}, {courses: 1 ,_id: 0})).courses
         courses.find(item => item.idC == this.idC).courseLike.push(ctx.from.id)
         await BD.updateOne({baza: 'dataBaze'}, {courses: courses})
-        
-
     }
     async delSerie(allCourses, idC){
         allCourses.find(item => item.series.find(item => item.idC == idC)).series.splice(allCourses.find(item => item.series.find(item => item.idC == idC)).series.findIndex(item => item.idC == idC), 1)
@@ -151,5 +149,6 @@ class Course {
         await BD.updateOne({baza: 'dataBaze'}, {courses: courses})
     }
 }
+
 exports.User = User
 exports.Course = Course
