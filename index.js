@@ -74,7 +74,7 @@ bot.on('chat_member', async (ctx) => {
     try{
         // console.log(ctx.update.chat_member.chat.id)
         const user  = await func.userClass(arrayAllUsers, ctx.from.id)
-        if (ctx.from.is_bot == false && ctx.update.chat_member.chat.id == process.env.TECH_CHAT || ctx.update.chat_member.chat.id == process.env.PUBLIC_GROUP){
+        if (ctx.from.is_bot == false){
             if(ctx.update.chat_member.new_chat_member.status == 'member'){
                 console.log('add')
                 if(ctx.update.chat_member.chat.id == process.env.TECH_CHAT){
