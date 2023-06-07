@@ -141,7 +141,7 @@ bot.on('message', async (ctx) => {
                     await func.startMenu(ctx, arrayAllUsers, logo)
                 }
             }
-            else if(typeof ctx.message['video'] !== "undefined" && fix.admins.includes(ctx.from.id) && regX.newSerie.test(user.step)){
+            else if(typeof ctx.message['video'] !== "undefined" && fix.admins.concat(adminUsers).includes(ctx.from.id) && regX.newSerie.test(user.step)){
                 const idCourse = user.step.slice(8)
                 const course = allCourses.filter(item => item.idC == idCourse)[0]
                 await BD.updateOne({baza: 'dataBaze'}, {$inc: {idC: 1}}, {upsert: true})
