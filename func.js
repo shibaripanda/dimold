@@ -182,10 +182,12 @@ func = {
         }
     },
     upDateAllUsersMenu: async function (ctx, arrayAllUsers, logo, adminUsers){
+        const time = Date.now()
         for(let i of arrayAllUsers.filter(item => item.id !== ctx.from.id && item.point == 1)){
                ctx.from.id = i.id
                await func.startMenu(ctx, arrayAllUsers, logo)
         }
+        console.log((Date.now() - time)/1000)
         const mesText = await bot.telegram.sendMessage(ctx.chat.id, '✅', {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
         setInterval(async () => {
             await bot.telegram.deleteMessage(ctx.chat.id, mesText.message_id).catch(fix.errorDone)
