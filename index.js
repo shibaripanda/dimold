@@ -276,7 +276,7 @@ bot.on('callback_query', async (ctx) => {
             const valueSplit = value.slice(10)
             const name = allCourses.filter(item => item.idC == valueSplit)[0]
             await name.like(allCourses, ctx)
-            await func.upDateAllUsersMenu(ctx, arrayAllUsers, logo, adminUsers)
+            // await func.upDateAllUsersMenu(ctx, arrayAllUsers, logo, adminUsers)
             // text = `"${name.courseName}"`
             // keyboard = await keys.forLookCourse(name)
             // await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
