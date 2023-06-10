@@ -182,11 +182,9 @@ func = {
         }
     },
     upDateAllUsersMenu: async function (ctx, arrayAllUsers, logo, adminUsers){
-        for(let i of arrayAllUsers.filter(item => item.id !== ctx.from.id)){
-            if(i.point == 1){
+        for(let i of arrayAllUsers.filter(item => item.id !== ctx.from.id && item.point == 1)){
                ctx.from.id = i.id
-               await func.startMenu(ctx, arrayAllUsers, logo)  
-            }
+               await func.startMenu(ctx, arrayAllUsers, logo)
         }
         const mesText = await bot.telegram.sendMessage(ctx.chat.id, '✅', {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
         setInterval(async () => {
