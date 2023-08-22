@@ -15,7 +15,8 @@ const regX = {
     errorAc: /^errorAc/,
     adminTest: /^OnAdmin/,
     adminTest1: /^OffAdmin/,
-    delSerie: /^delSerie/
+    delSerie: /^delSerie/,
+    total: /^total/
 }
 
 exports.regX = regX

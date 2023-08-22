@@ -109,12 +109,12 @@ bot.on('chat_member', async (ctx) => {
 bot.on('message', async (ctx) => {
     try{
         if(ctx.chat.id > 0){
-            // console.log(ctx.update.chat_member.chat.id)
+            console.log(ctx.message)
             const value = ctx.message.text
             const user  = await func.userClass(arrayAllUsers, ctx.from.id)
             await bot.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id).catch(fix.errorDone)
 
-            if(typeof ctx.message['photo'] !== "undefined" && fix.admins.includes(ctx.from.id)){
+            if(typeof ctx.message['photo'] !== "undefined" && fix.admins.includes(ctx.from.id) && !regX.newSerie.test(user.step)){
                 await func.saveLogo(ctx)
             }
             else if(typeof ctx.message['photo'] !== "undefined" && user.step == 'upScreen'){
@@ -141,12 +141,41 @@ bot.on('message', async (ctx) => {
                     await func.startMenu(ctx, arrayAllUsers, logo)
                 }
             }
+            else if(regX.total.test(ctx.message.text.toLowerCase()) && fix.admins.includes(ctx.from.id)){
+                const totalUsers = await BD.countDocuments()
+                const mes = await bot.telegram.sendMessage(ctx.chat.id, 'Пользователей: ' + totalUsers).catch(fix.errorDone)
+                setTimeout(async () => {
+                    bot.telegram.deleteMessage(ctx.chat.id, mes.message_id).catch(fix.errorDone)
+                }, 1500)
+            }
             else if(typeof ctx.message['video'] !== "undefined" && fix.admins.concat(adminUsers).includes(ctx.from.id) && regX.newSerie.test(user.step)){
                 const idCourse = user.step.slice(8)
-                const course = allCourses.filter(item => item.idC == idCourse)[0]
+                const course = await allCourses.filter(item => item.idC == idCourse)[0]
                 await BD.updateOne({baza: 'dataBaze'}, {$inc: {idC: 1}}, {upsert: true})
                 const idC = (await BD.findOne({baza: 'dataBaze'}, {_id: 0, idC: 1})).idC
-                await course.addSeries(allCourses, ctx.message.video.file_id, ctx.message.video.file_name, idC)
+                await course.addSeries('video', allCourses, ctx.message.video.file_id, ctx.message.caption ? ctx.message.caption: ctx.message.video.file_name.slice(0, -4), idC)
+                text = `<b>${fix.settingsText}</b>\n` + course.courseName
+                keyboard = await keys.forEditCourse(course)
+                await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+                await user.setOptionUser('step', `zero`)
+            }
+            else if(typeof ctx.message['photo'] !== "undefined" && fix.admins.concat(adminUsers).includes(ctx.from.id) && regX.newSerie.test(user.step)){
+                const idCourse = user.step.slice(8)
+                const course = await allCourses.filter(item => item.idC == idCourse)[0]
+                await BD.updateOne({baza: 'dataBaze'}, {$inc: {idC: 1}}, {upsert: true})
+                const idC = (await BD.findOne({baza: 'dataBaze'}, {_id: 0, idC: 1})).idC
+                await course.addSeries('photo', allCourses, ctx.message.photo[0].file_id, ctx.message.caption ? ctx.message.caption: 'Изображение', idC)
+                text = `<b>${fix.settingsText}</b>\n` + course.courseName
+                keyboard = await keys.forEditCourse(course)
+                await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+                await user.setOptionUser('step', `zero`)
+            }
+            else if(typeof ctx.message['document'] !== "undefined" && fix.admins.concat(adminUsers).includes(ctx.from.id) && regX.newSerie.test(user.step)){
+                const idCourse = user.step.slice(8)
+                const course = await allCourses.filter(item => item.idC == idCourse)[0]
+                await BD.updateOne({baza: 'dataBaze'}, {$inc: {idC: 1}}, {upsert: true})
+                const idC = (await BD.findOne({baza: 'dataBaze'}, {_id: 0, idC: 1})).idC
+                await course.addSeries('document', allCourses, ctx.message.document.file_id, ctx.message.caption ? ctx.message.caption : ctx.message.document.file_name.slice(0, -4), idC)
                 text = `<b>${fix.settingsText}</b>\n` + course.courseName
                 keyboard = await keys.forEditCourse(course)
                 await bot.telegram.editMessageText(ctx.chat.id, user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
@@ -171,7 +200,7 @@ bot.on('message', async (ctx) => {
 bot.on('callback_query', async (ctx) => {
     try{
         await ctx.answerCbQuery()
-        let value = ctx.update.callback_query.data
+        let value = await ctx.update.callback_query.data
         let user  = await func.userClass(arrayAllUsers, ctx.from.id)
         let text
         let keyboard = false
@@ -186,14 +215,14 @@ bot.on('callback_query', async (ctx) => {
         }
         else if(regX.courseSettings.test(value)){
             const valueSplit = value.slice(14)
-            const course = allCourses.filter(item => item.idC == valueSplit)[0]
+            const course = await allCourses.filter(item => item.idC == valueSplit)[0]
             text = `<b>${fix.settingsText}</b>\n` + `"${course.courseName}"\n` + `${fix.countSeries} ${course.series.length}`
             keyboard = await keys.forEditCourse(course)
             await bot.telegram.editMessageText(ctx.chat.id, await user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
         }
         else if(regX.dellCourse.test(value)){
             const valueSplit = value.slice(10)
-            const course = allCourses.filter(item => item.idC == valueSplit)[0]
+            const course = await allCourses.filter(item => item.idC == valueSplit)[0]
             await course.dell(allCourses)
             await func.startMenu(ctx, arrayAllUsers, logo)
             // await func.upDateAllUsersMenu(ctx, arrayAllUsers, logo, adminUsers)
@@ -201,7 +230,7 @@ bot.on('callback_query', async (ctx) => {
         else if(regX.statusOnOff.test(value)){
             console.log(value)
             const valueSplit = value.slice(11)
-            const course = allCourses.filter(item => item.idC == valueSplit)[0]
+            const course = await allCourses.filter(item => item.idC == valueSplit)[0]
             await course.onOff(allCourses)
             text = `<b>${fix.settingsText}</b>\n` + course.courseName
             keyboard = await keys.forEditCourse(course)
@@ -210,7 +239,7 @@ bot.on('callback_query', async (ctx) => {
         }
         else if(regX.statusPay.test(value)){
             const valueSplit = value.slice(9)
-            const course = allCourses.filter(item => item.idC == valueSplit)[0]
+            const course = await allCourses.filter(item => item.idC == valueSplit)[0]
             await course.pay(allCourses)
             text = `<b>${fix.settingsText}</b>\n` + course.courseName
             keyboard = await keys.forEditCourse(course)
@@ -242,8 +271,9 @@ bot.on('callback_query', async (ctx) => {
             await user.setOptionUser('point', 3)
             const valueSplit = value.slice(7)
 
-            const course = allCourses.find(item => item.series.find(item => item.idC == valueSplit))
+            const course = await allCourses.find(item => item.series.find(item => item.idC == valueSplit))
             const serie = course.series.find(item => item.idC == valueSplit)
+            console.log(serie)
             const indexSerie = course.series.findIndex(item => item.idC == valueSplit)
 
             const text = `${fix.reitingText}(${course.courseLike.length}) ` + `"${course.courseName}"`
@@ -327,8 +357,8 @@ bot.on('callback_query', async (ctx) => {
         }
         else if(regX.delSerie.test(value)){
             await user.setOptionUser('point', 3)
-            const valueSplit = value.slice(8)
-            const course = allCourses.find(item => item.series.find(item => item.idC == valueSplit))
+            const valueSplit = await value.slice(8)
+            const course = await allCourses.find(item => item.series.find(item => item.idC == valueSplit))
             await course.delSerie(allCourses, valueSplit)
             text = `<b>${fix.settingsText}</b>\n` + `"${course.courseName}"\n` + `${fix.countSeries} ${course.series.length}`
             const keyboard = await keys.forEditCourse(course)

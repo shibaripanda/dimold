@@ -78,6 +78,10 @@ techMes: {
 subGroupUsers: {
     type: Array,
     required: true,
+},
+start: {
+    type: Number,
+    required: true,
 }
 }, {timestamps: true})
 

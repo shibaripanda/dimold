@@ -64,6 +64,7 @@ func = {
            if(!arrayAllUsers.map(item => item.id).includes(currentId)){
             await BD.updateOne({id: currentId}, {username: '@' + ctx.from.username, lastActiv: Date.now(), point: 0}, {upsert: true})
             arrayAllUsers.push(new User(await func.getInfoFromMongo(currentId)))
+            await bot.telegram.sendMessage(process.env.TECH_SCREEN, 'New user! 👑\n' + '@' + ctx.from.username)
             }
             return arrayAllUsers 
         }
@@ -100,7 +101,7 @@ func = {
     },
     startMenu: async function (ctx, arrayAllUsers, logo){
         try{
-            const user  = await func.userClass(arrayAllUsers, ctx.from.id)
+            const user = await func.userClass(arrayAllUsers, ctx.from.id)
             await user.setOptionUser('step', 'zero')
             await user.setOptionUser('point', 1)
             const mediaMassiv = []
@@ -146,11 +147,24 @@ func = {
                 keyboard = await keys.forSimpleUser()
             }
 
-            if(await user.lastText == undefined){
+            if(user.start == undefined){
+                await user.setOptionUser('start', 0)
+            }
+            else{
+                const a = user.start + 1
+                await user.setOptionUser('start', a)
+            }
+
+            if(await user.lastText == undefined || user.start > 2){
+                if(user.start > 2){
+                    await bot.telegram.deleteMessage(user.id, user.lastMedia).catch(fix.errorDone)
+                    await bot.telegram.deleteMessage(user.id, user.lastText).catch(fix.errorDone)
+                }
                 const mesMedia = await bot.telegram.sendMediaGroup(ctx.from.id, mediaMassiv, {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
                 const mesText = await bot.telegram.sendMessage(ctx.from.id, text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
                 await user.setOptionUser('lastText', mesText.message_id)
                 await user.setOptionUser('lastMedia', mesMedia[0].message_id)
+                await user.setOptionUser('start', 0)
             }
             else{
                 await bot.telegram.editMessageMedia(ctx.from.id, await user.lastMedia, 'hh', mediaMassiv[0], {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)

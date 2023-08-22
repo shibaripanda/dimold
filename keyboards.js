@@ -60,11 +60,18 @@ const keys = {
                   list.push([Markup.button.callback(`${fix.addSerie}`, `addSeriesToCourse${course.idC}`)])  
                 }
                 for(let i of course.series){
+                    let docType = fix.vid
+                    if(i.type == 'photo'){
+                        docType = fix.pic
+                    }
+                    else if(i.type == 'document'){
+                        docType = fix.doc
+                    }
                     if(flagOn == `${fix.vkl} /🔴 ${fix.vikl}`){
-                        list.push([Markup.button.callback(`❌ ${fix.dellText}: ${i.caption}`, `delSerie${i.idC}`)])
+                        list.push([Markup.button.callback(`❌ ${fix.dellText}: ${docType} ${i.caption}`, `delSerie${i.idC}`)])
                     }
                     else{
-                        list.push([Markup.button.callback(`${i.caption}`, `zero`)])
+                        list.push([Markup.button.callback(`${docType} ${i.caption}`, `zero`)])
                     }
                 }
                 list.push([Markup.button.callback(`${flagPay}`, `statusPay${course.idC}`)])
@@ -91,11 +98,19 @@ const keys = {
         try{
             if(course.series.length > 0){
             const list = []
+            list.push([Markup.button.url(`${fix.maind}`, fix.linkSubGroup), Markup.button.url(`${fix.otzivi}`, fix.linkOtziviGroup)])
             // list.push([Markup.button.callback(`👍`, `likeCourse${course.idC}`)])
             for(let i of course.series){
-                list.push([Markup.button.callback(`${i.caption}`, `showSer${i.idC}`)])
+                let docType = fix.vid
+                if(i.type == 'photo'){
+                    docType = fix.pic
+                }
+                else if(i.type == 'document'){
+                    docType = fix.doc
+                }
+                list.push([Markup.button.callback(`${docType} ${i.caption}`, `showSer${i.idC}`)])
             }
-            list.push([Markup.button.callback(`${fix.backText}`, `meinMenu`)])
+            list.push([Markup.button.callback(`${fix.backText}`, `meinMenu`), Markup.button.url(`${fix.maind}`, fix.linkSubGroup), Markup.button.url(`${fix.otzivi}`, fix.linkOtziviGroup)])
             return Markup.inlineKeyboard(list)
           }  
         }
@@ -139,11 +154,12 @@ const mark = {
     listCoursesForSimple: async function (allCourses){
         try{
            const list = []
+            list.push([Markup.button.url(`${fix.maind}`, fix.linkSubGroup), Markup.button.url(`${fix.otzivi}`, fix.linkOtziviGroup)])
             list.push([Markup.button.url(`${fix.toSubText}`, fix.linkSub)])
             for(let i of allCourses.filter(item => item.statusOn == true).sort(function(a, b){return b.courseLike.length - a.courseLike.length})){
                 list.push([Markup.button.callback(`${fix.reitingText}(${i.courseLike.length}) ` + `🔒 ` + i.courseName, `zero`)])
             }
-            list.push([Markup.button.url(`${fix.maind}`, fix.linkSubGroup)])
+            list.push([Markup.button.url(`${fix.maind}`, fix.linkSubGroup), Markup.button.url(`${fix.otzivi}`, fix.linkOtziviGroup)])
             return list 
         }
         catch(e){
@@ -153,6 +169,7 @@ const mark = {
     listCoursesForSub: async function (allCourses){
         try{
            const list = []
+           list.push([Markup.button.url(`${fix.maind}`, fix.linkSubGroup), Markup.button.url(`${fix.otzivi}`, fix.linkOtziviGroup)])
         list.push([Markup.button.callback(`${fix.buyText}`, 'buyAllCourses')])
         for(let i of allCourses.filter(item => item.statusOn == true).sort(function(a, b){return b.courseLike.length - a.courseLike.length})){
             let newTime = ''
@@ -171,7 +188,7 @@ const mark = {
             }
                 list.push([Markup.button.callback(`${newTime}${fix.reitingText}(${i.courseLike.length}) ` + `${flagPay} ` + i.courseName, link)])
         }
-        list.push([Markup.button.url(`${fix.maind}`, fix.linkSubGroup)])
+        list.push([Markup.button.url(`${fix.maind}`, fix.linkSubGroup), Markup.button.url(`${fix.otzivi}`, fix.linkOtziviGroup)])
         return list 
         }
         catch(e){
@@ -181,6 +198,7 @@ const mark = {
     listCoursesForPay: async function (allCourses){
         try{
           const list = []
+          list.push([Markup.button.url(`${fix.maind}`, fix.linkSubGroup), Markup.button.url(`${fix.otzivi}`, fix.linkOtziviGroup)])
         for(let i of allCourses.filter(item => item.statusOn == true).sort(function(a, b){return b.courseLike.length - a.courseLike.length})){
             let newTime = ''
             if(Date.now() - i.start < fix.timeForNew){
@@ -188,7 +206,7 @@ const mark = {
             }
             list.push([Markup.button.callback(`${newTime}${fix.reitingText}(${i.courseLike.length}) ` + `✅ ` + i.courseName, 'look' + i.idC)])
         }
-        list.push([Markup.button.url(`${fix.maind}`, fix.linkSubGroup)])
+        list.push([Markup.button.url(`${fix.maind}`, fix.linkSubGroup), Markup.button.url(`${fix.otzivi}`, fix.linkOtziviGroup)])
         // list.push([Markup.button.callback(`${fix.refreshText}`, 'meinMenu')])
         return list  
         }
