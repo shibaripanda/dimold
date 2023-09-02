@@ -202,6 +202,7 @@ bot.on('callback_query', async (ctx) => {
         await ctx.answerCbQuery()
         if(ctx.chat.id > 0){
             let value = await ctx.update.callback_query.data
+            console.log(value)
             let user  = await func.userClass(arrayAllUsers, ctx.from.id)
             let text
             let keyboard = false
@@ -364,6 +365,9 @@ bot.on('callback_query', async (ctx) => {
                 text = `<b>${fix.settingsText}</b>\n` + `"${course.courseName}"\n` + `${fix.countSeries} ${course.series.length}`
                 const keyboard = await keys.forEditCourse(course)
                 await bot.telegram.editMessageText(ctx.chat.id, await user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+            }
+            else{
+                console.log('nihua')
             }
         }
         else{
