@@ -218,12 +218,16 @@ bot.on('callback_query', async (ctx) => {
             else if(regX.courseSettings.test(value)){
                 const valueSplit = value.slice(14)
                 const course = await allCourses.filter(item => item.idC == valueSplit)[0]
-                console.log(course)
-                text = `<b>${fix.settingsText}</b>\n` + `"${course.courseName}"\n` + `${fix.countSeries} ${course.series.length}`
+                // console.log(course)
+                let maxSer = ''
+                if(course.series.length > 83){
+                    maxSer = 'Максимальное количество серий ❗️❗️❗️'
+                }
+                text = `<b>${fix.settingsText}</b>\n` + `"${course.courseName}"\n` + `${fix.countSeries} ${course.series.length}\n${maxSer}`
                 keyboard = await keys.forEditCourse(course)
                 console.log(keyboard.reply_markup.inline_keyboard.length)
                 const test = await bot.telegram.editMessageText(ctx.chat.id, await user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
-                console.log(test)
+                // console.log(test)
             }
             else if(regX.dellCourse.test(value)){
                 const valueSplit = value.slice(10)
