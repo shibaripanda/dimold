@@ -59,7 +59,7 @@ const keys = {
                 if(flagOn == `${fix.vkl} /🔴 ${fix.vikl}` && course.series.length < 84){
                   list.push([Markup.button.callback(`${fix.addSerie}`, `addSeriesToCourse${course.idC}`)])  
                 }
-                for(let i of course.series.slice(1, 86)){
+                for(let i of course.series){
                     let docType = fix.vid
                     if(i.type == 'photo'){
                         docType = fix.pic
