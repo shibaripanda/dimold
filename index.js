@@ -221,7 +221,7 @@ bot.on('callback_query', async (ctx) => {
                 console.log(course)
                 text = `<b>${fix.settingsText}</b>\n` + `"${course.courseName}"\n` + `${fix.countSeries} ${course.series.length}`
                 keyboard = await keys.forEditCourse(course)
-                console.log(keyboard.reply_markup.inline_keyboard)
+                console.log(keyboard.reply_markup.inline_keyboard.length)
                 await bot.telegram.editMessageText(ctx.chat.id, await user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
             }
             else if(regX.dellCourse.test(value)){
