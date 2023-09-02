@@ -99,6 +99,15 @@ func = {
             console.log(e)
         }
     },
+    startStep1: async function (ctx, arrayAllUsers){
+        try{
+            arrayAllUsers = await func.addNewUserToArray(ctx, arrayAllUsers, ctx.from.id)
+            return arrayAllUsers
+        }
+        catch(e){
+            console.log(e)
+        }
+    },
     startMenu: async function (ctx, arrayAllUsers, logo){
         try{
             const user = await func.userClass(arrayAllUsers, ctx.from.id)
