@@ -171,6 +171,7 @@ func = {
                 }
                 const mesMedia = await bot.telegram.sendMediaGroup(ctx.from.id, mediaMassiv, {protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
                 const mesText = await bot.telegram.sendMessage(ctx.from.id, text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+                console.log(mesText)
                 await user.setOptionUser('lastText', mesText.message_id)
                 await user.setOptionUser('lastMedia', mesMedia[0].message_id)
                 await user.setOptionUser('start', 0)
