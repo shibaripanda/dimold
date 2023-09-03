@@ -64,7 +64,6 @@ func = {
            if(!arrayAllUsers.map(item => item.id).includes(currentId)){
             await BD.updateOne({id: currentId}, {username: '@' + ctx.from.username, lastActiv: Date.now(), point: 0}, {upsert: true})
             arrayAllUsers.push(new User(await func.getInfoFromMongo(currentId)))
-            await bot.telegram.sendMessage(process.env.TECH_SCREEN, 'New user! 👑\n' + '@' + ctx.from.username)
             }
             return arrayAllUsers 
         }

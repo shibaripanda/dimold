@@ -60,6 +60,9 @@ startWork(fix.timeToUpdate)
 bot.start(async (ctx) => {
     try{
         if(ctx.chat.id > 0){
+            if(!arrayAllUsers.map(item => item.id).includes(ctx.from.id)){
+                await bot.telegram.sendMessage(process.env.TECH_SCREEN, 'New user! 👑\n' + '@' + ctx.from.username)
+            }
            arrayAllUsers = await func.startStep(ctx, arrayAllUsers)
            await func.startMenu(ctx, arrayAllUsers, logo) 
         }
@@ -98,7 +101,7 @@ bot.on('chat_member', async (ctx) => {
         else{
             await bot.telegram.banChatMember(ctx.chat.id, ctx.from.id, false, true)
         }
-        if(await user.getPayStatus() == false){
+        if(await user.getPayStatus() == false && user.lastText !== undefined){
             await func.startMenu(ctx, arrayAllUsers, logo, allCourses)
         }
     }
