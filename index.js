@@ -286,7 +286,7 @@ bot.on('callback_query', async (ctx) => {
 
                 const course = await allCourses.find(item => item.series.find(item => item.idC == valueSplit))
                 const serie = course.series.find(item => item.idC == valueSplit)
-                console.log(serie)
+                // console.log(serie)
                 const indexSerie = course.series.findIndex(item => item.idC == valueSplit)
 
                 const text = `${fix.reitingText}(${course.courseLike.length}) ` + `"${course.courseName}"`
