@@ -125,7 +125,9 @@ const mark = {
     listCoursesForAdmin: async function (allCourses){
         try{
            const list = []
+           if(allCourses.length < 80){
             list.push([Markup.button.callback(`${fix.addCourse}`, 'adCourse')])
+           }
             for(let i of allCourses.sort(function(a, b){return b.start - a.start})){
                 let flagOn
             if(i.statusOn == true){
