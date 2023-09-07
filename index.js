@@ -334,7 +334,7 @@ bot.on('callback_query', async (ctx) => {
                     [Markup.button.callback(`${fix.payStep2} ${fix.upLoadScreen}`, 'upLoadScreen')],
                     [Markup.button.callback(`${fix.backText}`, 'meinMenu')]
                 ])
-                await bot.telegram.editMessageText(ctx.chat.id, await user.lastText, 'q', text, {...keyboard, protect_content: true, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
+                await bot.telegram.editMessageText(ctx.chat.id, await user.lastText, 'q', text, {...keyboard, protect_content: false, disable_web_page_preview: true, parse_mode: 'HTML'}).catch(fix.errorDone)
             }
             else if(regX.upLoadScreen.test(value)){
                 text = `${fix.upLoadScreenText}`

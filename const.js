@@ -52,7 +52,7 @@ const fix = {
    linklPayName: 'Тинькофф 2000р',
    linklPayName1: 'Qiwi 2000р',
    linklPayName2: 'Binance 2000р',
-   forPayStepText: 'Несколько простых шагов для полного доступа ко всем курсам\nШаг 1: Binance: <code>0x57eb9bbdf8ba3f0aaf89035aec609248e2af0d2c</code>',
+   forPayStepText: 'Несколько простых шагов для полного доступа ко всем курсам\n\nШаг 1: Binance: <code>0x57eb9bbdf8ba3f0aaf89035aec609248e2af0d2c</code>',
    payStep2: 'Шаг 2:',
    upLoadScreen: 'Отправить скрин оплаты',
    upLoadScreenText: 'Отправь боту скрин оплаты!',
