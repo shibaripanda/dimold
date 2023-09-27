@@ -16,7 +16,8 @@ const regX = {
     adminTest: /^OnAdmin/,
     adminTest1: /^OffAdmin/,
     delSerie: /^delSerie/,
-    total: /^total/
+    total: /^total/,
+    orderCourse: /^order/
 }
 
 exports.regX = regX
