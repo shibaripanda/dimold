@@ -113,7 +113,7 @@ bot.on('chat_member', async (ctx) => {
 bot.on('message', async (ctx) => {
     try{
         if(ctx.chat.id > 0){
-            console.log(ctx.message)
+            // console.log(ctx.message)
             const value = ctx.message.text
             const user  = await func.userClass(arrayAllUsers, ctx.from.id)
             await bot.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id).catch(fix.errorDone)
@@ -187,8 +187,9 @@ bot.on('message', async (ctx) => {
                 await func.startMenu(ctx, arrayAllUsers, logo)
             }
             else if(user.step == 'order'){
+                // console.log(ctx.from)
                 await bot.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id).catch(fix.errorDone)
-                await bot.telegram.sendMessage(process.env.TECH_SCREEN, value).catch(fix.errorDone)
+                await bot.telegram.sendMessage(process.env.TECH_SCREEN, value + '\n' + ctx.from.first_name  + '\n@' + ctx.from.username).catch(fix.errorDone)
                 await user.setOptionUser('step', 'zero')
                 await func.startMenu(ctx, arrayAllUsers, logo)
             }
