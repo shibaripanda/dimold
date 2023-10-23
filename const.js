@@ -31,7 +31,7 @@ const fix = {
    vikl: 'Выкл',
    canselText: 'Отмена',
    countSeries: 'Количество серий:',
-   forAllCoursesText: 'Для доступа ко всем курсам купите доступ',
+   forAllCoursesText: 'Наши курсы',//forAllCoursesText: 'Для доступа ко всем курсам купите доступ',
    buyText: 'Купить доступ!',
    buyLink: process.env.buyLink,
    buyLink1: process.env.buyLink1,
