@@ -362,7 +362,7 @@ bot.on('callback_query', async (ctx) => {
                 text = `${fix.forPayStepText}`
 
                 keyboard = Markup.inlineKeyboard([
-                    [Markup.button.webApp(`${fix.payStep1} ${fix.linklPayName}`, fix.buyLink), Markup.button.webApp(`${fix.payStep1} ${fix.linklPayName1}`, fix.buyLink1)],
+                    [Markup.button.webApp(`${fix.payStep1} ${fix.linklPayName}`, fix.buyLink)],//, Markup.button.webApp(`${fix.payStep1} ${fix.linklPayName1}`, fix.buyLink1)
                     // [Markup.button.webApp(`${fix.payStep1} ${fix.linklPayName2}`, fix.buyLink2)],
                     [Markup.button.callback(`${fix.payStep2} ${fix.upLoadScreen}`, 'upLoadScreen')],
                     [Markup.button.callback(`${fix.backText}`, 'meinMenu')]
