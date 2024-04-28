@@ -81,22 +81,22 @@ bot.on('chat_member', async (ctx) => {
         if (ctx.from.is_bot == false){
             if(ctx.update.chat_member.new_chat_member.status == 'member'){
                 console.log('add')
-                if(ctx.update.chat_member.chat.id == process.env.TECH_CHAT){
+                if(ctx.update.chat_member.chat.id == process.env.PUBLIC_GROUP){
                    allCourses = await user.subOnOff(true)
                    console.log('1') 
                 }
-                else if(ctx.update.chat_member.chat.id == process.env.PUBLIC_GROUP){
+                else if(ctx.update.chat_member.chat.id == process.env.TECH_CHAT){
                     allCourses = await user.subGroupOnOff(true) 
                     console.log('2') 
                 }
             }
             else if(ctx.update.chat_member.new_chat_member.status == 'left'){
                 console.log('left')
-                if(ctx.update.chat_member.chat.id == process.env.TECH_CHAT){
+                if(ctx.update.chat_member.chat.id == process.env.PUBLIC_GROUP){
                     console.log('3')
                    allCourses = await user.subOnOff(false)
                 }
-                else if(ctx.update.chat_member.chat.id == process.env.PUBLIC_GROUP){
+                else if(ctx.update.chat_member.chat.id == process.env.TECH_CHAT){
                    allCourses = await user.subGroupOnOff(false)
                    console.log('4') 
                 }
