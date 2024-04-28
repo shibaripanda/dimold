@@ -75,7 +75,7 @@ bot.start(async (ctx) => {
 
 bot.on('chat_member', async (ctx) => {
     try{
-        // console.log(ctx.update.chat_member.chat.id)
+        console.log(ctx.update.chat_member.chat.id)
         arrayAllUsers = await func.startStep1(ctx, arrayAllUsers)
         const user  = await func.userClass(arrayAllUsers, ctx.from.id)
         if (ctx.from.is_bot == false){
